@@ -14,8 +14,8 @@
 \".*\"			return STRING;
 [\ \t\n]		;
 
+[@"'.^\ ]+		return ERROR;
 
-.+			return ERROR;
 
 %%
 
