@@ -25,6 +25,5 @@
 #define PERIOD 21
 #define COMMA 22
 
-#define KEYWORD 23
 
-#define ERROR 24
+#define ERROR 99

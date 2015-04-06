@@ -7,8 +7,6 @@
 
 %%
 
-(program|begin|end|var|real|integer|char|procedure|function|return|else|read|write|while|do|if|then|for|repeat|until) return KEYWORD;
-
 [a-zA-Z][_a-zA-Z0-9]*	return IDENTIFIER;
 [1-9][0-9]*		return INTEGER;
 [0-9]*"."[0-9]+		return REAL;

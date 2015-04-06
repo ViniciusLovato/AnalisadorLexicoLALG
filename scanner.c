@@ -1,27 +1,118 @@
 #include <stdio.h>
 #include <string.h>
-
+#include <stdlib.h>
 
 #include "scanner.h"
+
+#define HASH_SIZE 40
 
 extern int yylex(); 
 extern int yylineno;
 extern char *yytext;
 
+typedef struct hash_n
+{
+	// Number of keywords with the same hash value
+	int size;
+	// Keywords
+	char **keywords;
+} hash_node;
+
+hash_node table[HASH_SIZE];
+
+int init_hash()
+{
+	int i, j;
+	int hash_value;
+	char keyword[20][20] = {"program", "begin", "end", "var", "real", "integer", "char", "procedure", "function", "return", "else", "read", "write", "while", "do", "if", "then", "for", "repeat", "until"};
+
+	// Initializing hash
+	for(i = 0; i < HASH_SIZE; i++)
+	{
+		table[i].size = 0;
+		table[i].keywords = NULL;
+	}
+
+	// Filling out the hash
+	for(i = 0; i < 20; i++)
+	{
+		// Calculating hash value (index)
+		hash_value = hash(keyword[i]);
+
+		// Verifying if there is no collision
+		if(table[hash_value].size == 0)
+		{
+			// No collision
+			table[hash_value].size = 1;
+			// Allocating memory
+			table[hash_value].keywords = (char**) malloc(sizeof(char*));
+			table[hash_value].keywords[0] = (char*) malloc(sizeof(char)*strlen(keyword[i]));
+			strcpy(table[hash_value].keywords[0], keyword[i]);
+		}
+		else
+		{
+			table[hash_value].size++;
+			// Allocating memory
+			table[hash_value].keywords = realloc(table[hash_value].keywords, sizeof(char*)*table[hash_value].size);
+			table[hash_value].keywords[table[hash_value].size - 1] = (char*) malloc(sizeof(char)*strlen(keyword[i]));
+			strcpy(table[hash_value].keywords[table[hash_value].size - 1], keyword[i]);
+		}
+	}
+
+	return (0);
+}
+
+// Hash function
+// Sum all the char values starting with 0 for 'a', mod 40
 int hash(char *identifier)
 {
-	printf("Keyword: %s\n", yytext);
-	return(0);
+	int value = 0;
+	int j = strlen(identifier);
+	for(--j; j >= 0; j--)
+	{
+		value += (identifier[j] - 97);
+	}
+	value %= 40;
+
+	return(value);
+}
+
+// Function to check if the identifiers are keywords
+int keywordCheck(char *keyword)
+{
+	int hash_value = hash(keyword);
+	int j;
+
+	// Checking if the hash_value is valid
+	if(hash_value  > 0 && hash_value < HASH_SIZE)
+	{
+		for(j = 0; j < table[hash_value].size; j++)
+		{
+			// Verifying if the keyword is the same
+			if(!strcmp(table[hash_value].keywords[j], keyword))
+			{
+				return(1);
+			}
+		}
+	}
+	// Identifier is not a keyword
+	return (0);
 }
 
 int main(void){
 
 	int ntoken, vtoken;
 
+	// Initializing hash
+	init_hash();
+
 	ntoken = yylex();
 	while(ntoken){
 		if(ntoken == IDENTIFIER){
-			printf("Identifier: %s\n", yytext);
+			if(keywordCheck(yytext))
+				printf("Keyword: %s\n", yytext);
+			else
+				printf("Identifier: %s\n", yytext);
 		}
 		else if(ntoken == INTEGER){
 			printf("Integer: %s\n", yytext);
@@ -29,7 +120,7 @@ int main(void){
 		else if(ntoken == REAL){ 
 			printf("Real: %s\n", yytext);
 		}
- 		else if(ntoken == CHAR){ 
+		else if(ntoken == CHAR){ 
 			printf("Char: %s\n", yytext);
 		}
 		else if(ntoken == STRING){
@@ -85,9 +176,6 @@ int main(void){
 		}
 		else if(ntoken == ASSIGNMENT){
 			printf("Assignment: %s\n", yytext);
-		}
-		else if(ntoken == KEYWORD){
-			hash(yytext);
 		}
 		else if(ntoken == ERROR){
 			printf("Error: %s\n", yytext);
