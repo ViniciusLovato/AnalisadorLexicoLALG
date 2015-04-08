@@ -46,7 +46,7 @@ int init_hash()
 			table[hash_value].size = 1;
 			// Allocating memory
 			table[hash_value].keywords = (char**) malloc(sizeof(char*));
-			table[hash_value].keywords[0] = (char*) malloc(sizeof(char)*strlen(keyword[i]));
+			table[hash_value].keywords[0] = (char*) malloc(sizeof(char)*strlen(keyword[i])+1);
 			strcpy(table[hash_value].keywords[0], keyword[i]);
 		}
 		else
@@ -54,12 +54,26 @@ int init_hash()
 			table[hash_value].size++;
 			// Allocating memory
 			table[hash_value].keywords = realloc(table[hash_value].keywords, sizeof(char*)*table[hash_value].size);
-			table[hash_value].keywords[table[hash_value].size - 1] = (char*) malloc(sizeof(char)*strlen(keyword[i]));
+			table[hash_value].keywords[table[hash_value].size - 1] = (char*) malloc(sizeof(char)*strlen(keyword[i])+1);
 			strcpy(table[hash_value].keywords[table[hash_value].size - 1], keyword[i]);
 		}
 	}
 
 	return (0);
+}
+
+// Function to destroy the hash structure and free the memory
+int destroy_hash()
+{
+	int i, j;
+	for(i = 0; i < HASH_SIZE; i++)
+	{
+		for(j = 0; j < table[i].size; j++)
+		{
+			free(table[i].keywords[j]);
+		}
+		free(table[i].keywords);
+	}
 }
 
 // Hash function
@@ -182,4 +196,6 @@ int main(void){
 		} 
 		ntoken = yylex();
 	}
+	destroy_hash();
+	return (0);
 }
