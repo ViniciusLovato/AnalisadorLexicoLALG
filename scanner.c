@@ -200,6 +200,12 @@ int main(void){
 		else if(ntoken == ERROR_NON_ALPHANUMERIC){
 			printf("Invalid Character: %s\n", yytext);	
 		}	
+		else if(ntoken == ERROR_INVALID_NUMBER){
+			printf("Invalid Number: %s\n", yytext);	
+		}
+		else if(ntoken == ERROR_INVALID_IDENTIFIER){
+			printf("Invalid Identifier: %s\n", yytext);	
+		}
 		else if(ntoken == ERROR_LONG_NUMBER){
 			printf("Too Long Number: %s\n", yytext);	
 		}
