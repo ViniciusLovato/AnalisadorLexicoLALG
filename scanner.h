@@ -27,4 +27,5 @@
 
 #define ERROR_NON_ALPHANUMERIC 97
 #define ERROR_LONG_ID 98
-#define ERROR 99
+#define ERROR_LONG_NUMBER 99
+#define ERROR 100

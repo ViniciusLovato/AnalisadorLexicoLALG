@@ -9,6 +9,7 @@
 
 [a-zA-Z][_a-zA-Z0-9]{30,}	return ERROR_LONG_ID;
 [a-zA-Z][_a-zA-Z0-9]*	return IDENTIFIER;
+[1-9][0-9]{10,}		return ERROR_LONG_NUMBER;;
 [1-9][0-9]*		return INTEGER;
 [0-9]*"."[0-9]+		return REAL;
 \'.\'			return CHAR;

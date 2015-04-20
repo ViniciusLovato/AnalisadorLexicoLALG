@@ -199,6 +199,9 @@ int main(void){
 		}
 		else if(ntoken == ERROR_NON_ALPHANUMERIC){
 			printf("Invalid Character: %s\n", yytext);	
+		}	
+		else if(ntoken == ERROR_LONG_NUMBER){
+			printf("Too Long Number: %s\n", yytext);	
 		}
 		ntoken = yylex();
 	}
