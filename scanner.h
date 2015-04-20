@@ -25,5 +25,6 @@
 #define PERIOD 21
 #define COMMA 22
 
-
+#define ERROR_NON_ALPHANUMERIC 97
+#define ERROR_LONG_ID 98
 #define ERROR 99

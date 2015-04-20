@@ -194,6 +194,12 @@ int main(void){
 		else if(ntoken == ERROR){
 			printf("Error: %s\n", yytext);
 		} 
+		else if(ntoken == ERROR_LONG_ID){
+			printf("Too Long Identifier: %s\n", yytext);	
+		}
+		else if(ntoken == ERROR_NON_ALPHANUMERIC){
+			printf("Invalid Character: %s\n", yytext);	
+		}
 		ntoken = yylex();
 	}
 	destroy_hash();
