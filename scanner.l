@@ -37,7 +37,7 @@
 
 "{".*"}"		;
 
-[^a-zA-Z\d\s]+		return ERROR_NON_ALPHANUMERIC;
+[^a-zA-Z\d\s\n\t\{\}\:\;\,\.\+\-\*\\/\(\)\=\+\-\"\'\>\<]+		return ERROR_NON_ALPHANUMERIC;
 
 %%
 
