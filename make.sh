@@ -1,3 +1,4 @@
 #! /bin/sh
-lex scanner.l
-gcc scanner.c lex.yy.c -o scanner
+flex scanner.l
+yacc -d parser.y
+gcc y.tab.c lex.yy.c -o parser
