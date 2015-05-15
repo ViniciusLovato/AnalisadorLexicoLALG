@@ -5,7 +5,8 @@ extern int yylineno;
 
 extern int yylex();
 void yyerror(char *s);
-void panic(int code);
+void panic(int* array, int size);
+
 %}
 
 %start programa
@@ -68,7 +69,15 @@ corpo : dc lalg_begin comandos lalg_end;
 
 dc : dc_c dc_v dc_p dc_f;
 
-dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c | %empty;
+dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c 
+	| %empty 
+	| lalg_const error 
+	{ 
+		int syncArray[] = { lalg_var, lalg_begin };
+		yyerrok;
+		panic(syncArray, 2);
+		yyclearin;
+	};
 
 dc_v : lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v | %empty;
 
@@ -135,6 +144,18 @@ var_numero : var_integer | var_real;
 
 %%
 
+#define lalg_EOF 0
+
+int syncArrayProgram[] = { lalg_EOF };
+int syncArrayCorpo[] = { lalg_period };
+int syncArrayDc[] = { lalg_begin };
+int syncArrayDcc[] = { lalg_var, lalg_begin };
+int syncArrayDcv[] = { lalg_procedure, lalg_begin };
+int syncArrayTipoVar[] = { lalg_semicolon, lalg_rightp };
+int syncArrayVariaveis[] = { lalg_colon, lalg_rightp };
+int syncArrayMaisVar[] = { lalg_colon, lalg_rightp };
+int syncArrayDcp[] = { lalg_begin };
+
 void yyerror(char *s)
 {
         fprintf(stderr, "Parser: erro %s na linha %d, caracter %d nao esperado\n", s, yylineno, yychar);
@@ -145,17 +166,39 @@ int main(void)
         return yyparse();
 }
 
-void panic(int code)
+// Function that verifies if a token belongs to the syncArray
+int verifyToken(int* syncArray, int size, int token)
 {
+	int i;
+	for(i = 0; i < size; i++)
+	{
+                printf("Tokens eval: %d\n", syncArray[i]);
+		if(token == syncArray[i])
+		{
+			return i;
+		}
+	}
+
+	return(-1);
+}
+
+void panic(int* array, int size)
+{
+	sleep(1);
         int tokenTest = 0;
 
         printf("** Entering in panic mode **\n");
-        tokenTest = yylex();
+	tokenTest = yychar;
+        //tokenTest = yylex();
+	printf("kkkkerro: %d\n", tokenTest);
 
-        while(tokenTest != code && tokenTest != 0){
+        while(verifyToken(array, size, tokenTest) && tokenTest != 0){
+	sleep(1);
                 printf("Tokens skipped: %d\n", tokenTest);
                 tokenTest = yylex();
+		tokenTest = yychar;
+		printf("erro: %d\n", tokenTest);
         }
+
         printf("** Exiting in panic mode **\n");
 }
-
