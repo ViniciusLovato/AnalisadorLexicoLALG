@@ -1,8 +1,9 @@
 { Testes com declaracao de variaveis }
 program prog;
-const = 10.1;
+const minhavar1 = 10.1;
 var minhaVar2 : real;
-minharVar3 : integer;
+var minharVar3 : integer;
 begin
-	read(minhaVar);
+	while(do);
+	read(minhavar);
 end.

@@ -8,7 +8,6 @@
 #define ERROR_INVALID_NUMBER 504
 #define ERROR_NON_ALPHANUMERIC 505
 
-int buffer_counter;
 YY_BUFFER_STATE init_buffer;
 
 %}
@@ -73,9 +72,11 @@ YY_BUFFER_STATE init_buffer;
 "{".*"}"		;
 
 <<EOF>> {
-			if(buffer_counter == 0)
-				return 0;
-		};
+		printf("End of file or string\n");
+		yypop_buffer_state();
+		if(!YY_CURRENT_BUFFER)
+			return 0;
+	};
 
 [a-zA-Z]+([^a-zA-Z0-9_\d\n\t\{\}\:\;\,\.\+\-\*\\/\(\)\=\+\-\"\'\>\< ]+[a-zA-Z0-9_]*)*		return ERROR_INVALID_IDENTIFIER;
 [0-9]+(".")[0-9]*([^0-9\t\{\}\:\;\,\.\+\-\*\\/\(\)\=\+\-\"\'\>\< ]+[0-9]*)*	return ERROR_INVALID_NUMBER;
@@ -86,7 +87,6 @@ YY_BUFFER_STATE init_buffer;
 // Function that pushes the yyin buffer in the stack
 void createInitBuffer()
 {
-	buffer_counter = 1;
 	// Initializing the buffer
 	init_buffer = yy_create_buffer(yyin, YY_BUF_SIZE);
 	// Pushing the buffer into the stack
@@ -111,9 +111,16 @@ void destroyInitBuffer()
 	yy_delete_buffer(init_buffer);
 }
 
-// Function that decides what to do when you reach the end of a file
-int yywrap(void){
 
+int yywrap(void)
+{
+	return 1;
+}
+
+// Function that decides what to do when you reach the end of a file
+int yywrap1(void){
+
+	int buffer_counter = 0;
 	// decreases buffer counter
 	--buffer_counter;
 	// pop the buffer state
