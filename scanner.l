@@ -8,8 +8,6 @@
 #define ERROR_INVALID_NUMBER 504
 #define ERROR_NON_ALPHANUMERIC 505
 
-void printInitBufferStatus();
-void printBufferStatus();
 int buffer_counter;
 YY_BUFFER_STATE init_buffer;
 
@@ -100,7 +98,7 @@ void pushBuffer(char *str)
 	// Saving the current buffer
 	YY_BUFFER_STATE current = YY_CURRENT_BUFFER;
 	// Creating the string buffer (side effect: it automatic switches to this buffer)
-	YY_BUFFER_STATE string = yy_scan_string(yylval.str);
+	YY_BUFFER_STATE string = yy_scan_string(str);
 	// Returning to the current buffer
 	yy_switch_to_buffer(current);
 	// Pushing the string buffer in the stack

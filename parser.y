@@ -222,7 +222,7 @@ void panic(int* array, int size)
 
         //printf("buffer_counter: %d\n", buffer_counter);
 	
-        //printf("** Entering in panic mode **\n");
+        printf("** Entering in panic mode **\n");
 	// Getting the next token
         tokenTest = yylex();
 
