@@ -66,14 +66,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 extern int yylineno;
+extern int buffer_counter;
+
+#define YY_BUF_SIZE 32768
 
 extern int yylex();
+extern FILE* yyin;
 void yyerror(char *s);
 void panic(int* array, int size);
 
 
-#line 77 "y.tab.c" /* yacc.c:339  */
+#line 82 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -97,7 +102,7 @@ void panic(int* array, int size);
 # define YY_YY_Y_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -198,7 +203,14 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+typedef union YYSTYPE YYSTYPE;
+union YYSTYPE
+{
+#line 17 "parser.y" /* yacc.c:355  */
+char* str;
+
+#line 213 "y.tab.c" /* yacc.c:355  */
+};
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -212,7 +224,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 216 "y.tab.c" /* yacc.c:358  */
+#line 228 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -513,13 +525,13 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    66,    66,    68,    70,    72,    73,    74,    82,    82,
-      84,    84,    86,    88,    88,    90,    90,    92,    92,    94,
-      94,    96,    98,    98,   100,   102,   104,   104,   106,   108,
-     108,   110,   110,   112,   112,   114,   115,   116,   117,   118,
-     119,   120,   121,   123,   125,   125,   125,   125,   125,   125,
-     127,   129,   129,   129,   131,   131,   133,   133,   135,   137,
-     137,   139,   139,   141,   141,   141,   143,   143
+       0,    73,    73,    75,    77,    79,    80,    81,    89,    89,
+      91,    91,    93,    95,    95,    97,    97,    99,    99,   101,
+     101,   103,   105,   105,   107,   109,   111,   111,   113,   115,
+     115,   117,   117,   119,   119,   121,   122,   123,   124,   125,
+     126,   127,   128,   130,   132,   132,   132,   132,   132,   132,
+     134,   136,   136,   136,   138,   138,   140,   140,   142,   144,
+     144,   146,   146,   148,   148,   148,   150,   150
 };
 #endif
 
@@ -1384,18 +1396,18 @@ yyreduce:
   switch (yyn)
     {
         case 7:
-#line 75 "parser.y" /* yacc.c:1646  */
+#line 82 "parser.y" /* yacc.c:1646  */
     { 
 		int syncArray[] = { lalg_var, lalg_begin };
+		yyclearin;
 		yyerrok;
 		panic(syncArray, 2);
-		yyclearin;
 	}
-#line 1395 "y.tab.c" /* yacc.c:1646  */
+#line 1407 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1399 "y.tab.c" /* yacc.c:1646  */
+#line 1411 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1623,7 +1635,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 145 "parser.y" /* yacc.c:1906  */
+#line 152 "parser.y" /* yacc.c:1906  */
 
 
 #define lalg_EOF 0
@@ -1640,12 +1652,17 @@ int syncArrayDcp[] = { lalg_begin };
 
 void yyerror(char *s)
 {
-        fprintf(stderr, "Parser: erro %s na linha %d, caracter %d nao esperado\n", s, yylineno, yychar);
+        fprintf(stderr, "Parser: erro %s na linha %d, token \'%s\' nao esperado\n", s, yylineno, yylval.str);
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
-        return yyparse();
+	//yydebug = 1;
+	if(argc == 2)
+		yyin = fopen(argv[1], "r");
+
+	initBuffers();
+	return yyparse();
 }
 
 // Function that verifies if a token belongs to the syncArray
@@ -1666,21 +1683,20 @@ int verifyToken(int* syncArray, int size, int token)
 
 void panic(int* array, int size)
 {
-	sleep(1);
         int tokenTest = 0;
 
         printf("** Entering in panic mode **\n");
-	tokenTest = yychar;
-        //tokenTest = yylex();
-	printf("kkkkerro: %d\n", tokenTest);
+        tokenTest = yylex();
 
         while(verifyToken(array, size, tokenTest) && tokenTest != 0){
-	sleep(1);
                 printf("Tokens skipped: %d\n", tokenTest);
                 tokenTest = yylex();
-		tokenTest = yychar;
-		printf("erro: %d\n", tokenTest);
         }
 
-        printf("** Exiting in panic mode **\n");
+        printf("** antes push **\n");
+	//yypush_buffer_state(yy_scan_string(yylval.str));
+	yy_switch_to_buffer(yy_scan_string(yylval.str));
+	++buffer_counter;
+
+	printf("** Exiting in panic mode **\n");
 }

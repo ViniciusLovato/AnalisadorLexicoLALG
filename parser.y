@@ -1,14 +1,20 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 extern int yylineno;
+extern int buffer_counter;
+
+#define YY_BUF_SIZE 32768
 
 extern int yylex();
+extern FILE* yyin;
 void yyerror(char *s);
 void panic(int* array, int size);
 
 %}
 
+%union {char* str;}
 %start programa
 
 %token var_identifier
@@ -61,6 +67,7 @@ void panic(int* array, int size);
 %token lalg_then
 %token lalg_else
 
+%debug
 %%
 
 programa : lalg_program var_identifier lalg_semicolon corpo lalg_period;
@@ -74,12 +81,12 @@ dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c
 	| lalg_const error 
 	{ 
 		int syncArray[] = { lalg_var, lalg_begin };
+		yyclearin;
 		yyerrok;
 		panic(syncArray, 2);
-		yyclearin;
 	};
 
-dc_v : lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v | %empty;
+dc_v : lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v | %empty; 
 
 tipo_var : lalg_real | lalg_integer;
 
@@ -158,12 +165,17 @@ int syncArrayDcp[] = { lalg_begin };
 
 void yyerror(char *s)
 {
-        fprintf(stderr, "Parser: erro %s na linha %d, caracter %d nao esperado\n", s, yylineno, yychar);
+        fprintf(stderr, "Parser: erro %s na linha %d, token \'%s\' nao esperado\n", s, yylineno, yylval.str);
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
-        return yyparse();
+	//yydebug = 1;
+	if(argc == 2)
+		yyin = fopen(argv[1], "r");
+
+	initBuffers();
+	return yyparse();
 }
 
 // Function that verifies if a token belongs to the syncArray
@@ -184,21 +196,20 @@ int verifyToken(int* syncArray, int size, int token)
 
 void panic(int* array, int size)
 {
-	sleep(1);
         int tokenTest = 0;
 
         printf("** Entering in panic mode **\n");
-	tokenTest = yychar;
-        //tokenTest = yylex();
-	printf("kkkkerro: %d\n", tokenTest);
+        tokenTest = yylex();
 
         while(verifyToken(array, size, tokenTest) && tokenTest != 0){
-	sleep(1);
                 printf("Tokens skipped: %d\n", tokenTest);
                 tokenTest = yylex();
-		tokenTest = yychar;
-		printf("erro: %d\n", tokenTest);
         }
 
-        printf("** Exiting in panic mode **\n");
+        printf("** antes push **\n");
+	//yypush_buffer_state(yy_scan_string(yylval.str));
+	yy_switch_to_buffer(yy_scan_string(yylval.str));
+	++buffer_counter;
+
+	printf("** Exiting in panic mode **\n");
 }

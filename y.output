@@ -1,0 +1,1511 @@
+Terminals unused in grammar
+
+   var_char
+   var_string
+   lalg_char
+   lalg_string
+
+
+State 96 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: programa $end
+
+    1 programa: lalg_program var_identifier lalg_semicolon corpo lalg_period
+
+    2 corpo: dc lalg_begin comandos lalg_end
+
+    3 dc: dc_c dc_v dc_p dc_f
+
+    4 dc_c: lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c
+    5     | %empty
+    6     | lalg_const error
+
+    7 dc_v: lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v
+    8     | %empty
+
+    9 tipo_var: lalg_real
+   10         | lalg_integer
+
+   11 variaveis: var_identifier mais_var
+
+   12 mais_var: lalg_comma variaveis
+   13         | %empty
+
+   14 dc_p: lalg_procedure var_identifier parametros lalg_semicolon corpo_p dc_p
+   15     | %empty
+
+   16 dc_f: lalg_function var_identifier parametros lalg_colon tipo_var corpo_p dc_f
+   17     | %empty
+
+   18 parametros: lalg_leftp lista_par lalg_rightp
+   19           | %empty
+
+   20 lista_par: variaveis lalg_colon tipo_var mais_par
+
+   21 mais_par: lalg_semicolon lista_par
+   22         | %empty
+
+   23 corpo_p: dc_loc lalg_begin comandos lalg_end lalg_semicolon
+
+   24 dc_loc: dc_v
+
+   25 lista_arg: lalg_leftp argumentos lalg_rightp
+   26          | %empty
+
+   27 argumentos: var_identifier mais_ident
+
+   28 mais_ident: lalg_semicolon argumentos
+   29           | %empty
+
+   30 pfalsa: lalg_else cmd
+   31       | %empty
+
+   32 comandos: cmd lalg_semicolon comandos
+   33         | %empty
+
+   34 cmd: lalg_read lalg_leftp variaveis lalg_rightp
+   35    | lalg_write lalg_leftp variaveis lalg_rightp
+   36    | lalg_while lalg_leftp condicao lalg_rightp lalg_do cmd
+   37    | lalg_for var_identifier lalg_assignment expressao lalg_to expressao lalg_do cmd
+   38    | lalg_if condicao lalg_then cmd pfalsa
+   39    | var_identifier lalg_assignment expressao
+   40    | var_identifier lista_arg
+   41    | lalg_begin comandos lalg_end
+
+   42 condicao: expressao relacao expressao
+
+   43 relacao: lalg_equal
+   44        | lalg_n_equal
+   45        | lalg_g_than
+   46        | lalg_l_than
+   47        | lalg_ge_than
+   48        | lalg_le_than
+
+   49 expressao: termo outros_termos
+
+   50 op_un: lalg_add
+   51      | lalg_sub
+   52      | %empty
+
+   53 outros_termos: op_ad termo outros_termos
+   54              | %empty
+
+   55 op_ad: lalg_add
+   56      | lalg_sub
+
+   57 termo: op_un fator mais_fatores
+
+   58 mais_fatores: op_mul fator mais_fatores
+   59             | %empty
+
+   60 op_mul: lalg_mul
+   61       | lalg_div
+
+   62 fator: var_identifier
+   63      | var_numero
+   64      | lalg_leftp expressao lalg_rightp
+
+   65 var_numero: var_integer
+   66           | var_real
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256) 6
+var_identifier (258) 1 4 11 14 16 27 37 39 40 62
+var_real (259) 66
+var_integer (260) 65
+var_char (261)
+var_string (262)
+lalg_integer (263) 10
+lalg_real (264) 9
+lalg_char (265)
+lalg_string (266)
+lalg_add (267) 50 55
+lalg_sub (268) 51 56
+lalg_mul (269) 60
+lalg_div (270) 61
+lalg_equal (271) 4 43
+lalg_n_equal (272) 44
+lalg_g_than (273) 45
+lalg_l_than (274) 46
+lalg_ge_than (275) 47
+lalg_le_than (276) 48
+lalg_assignment (277) 37 39
+lalg_leftp (278) 18 25 34 35 36 64
+lalg_rightp (279) 18 25 34 35 36 64
+lalg_colon (280) 7 16 20
+lalg_semicolon (281) 1 4 7 14 21 23 28 32
+lalg_period (282) 1
+lalg_comma (283) 12
+lalg_program (284) 1
+lalg_procedure (285) 14
+lalg_function (286) 16
+lalg_begin (287) 2 23 41
+lalg_end (288) 2 23 41
+lalg_const (289) 4 6
+lalg_var (290) 7
+lalg_read (291) 34
+lalg_write (292) 35
+lalg_while (293) 36
+lalg_do (294) 36 37
+lalg_for (295) 37
+lalg_to (296) 37
+lalg_if (297) 38
+lalg_then (298) 38
+lalg_else (299) 30
+
+
+Nonterminals, with rules where they appear
+
+$accept (45)
+    on left: 0
+programa (46)
+    on left: 1, on right: 0
+corpo (47)
+    on left: 2, on right: 1
+dc (48)
+    on left: 3, on right: 2
+dc_c (49)
+    on left: 4 5 6, on right: 3 4
+dc_v (50)
+    on left: 7 8, on right: 3 7 24
+tipo_var (51)
+    on left: 9 10, on right: 7 16 20
+variaveis (52)
+    on left: 11, on right: 7 12 20 34 35
+mais_var (53)
+    on left: 12 13, on right: 11
+dc_p (54)
+    on left: 14 15, on right: 3 14
+dc_f (55)
+    on left: 16 17, on right: 3 16
+parametros (56)
+    on left: 18 19, on right: 14 16
+lista_par (57)
+    on left: 20, on right: 18 21
+mais_par (58)
+    on left: 21 22, on right: 20
+corpo_p (59)
+    on left: 23, on right: 14 16
+dc_loc (60)
+    on left: 24, on right: 23
+lista_arg (61)
+    on left: 25 26, on right: 40
+argumentos (62)
+    on left: 27, on right: 25 28
+mais_ident (63)
+    on left: 28 29, on right: 27
+pfalsa (64)
+    on left: 30 31, on right: 38
+comandos (65)
+    on left: 32 33, on right: 2 23 32 41
+cmd (66)
+    on left: 34 35 36 37 38 39 40 41, on right: 30 32 36 37 38
+condicao (67)
+    on left: 42, on right: 36 38
+relacao (68)
+    on left: 43 44 45 46 47 48, on right: 42
+expressao (69)
+    on left: 49, on right: 37 39 42 64
+op_un (70)
+    on left: 50 51 52, on right: 57
+outros_termos (71)
+    on left: 53 54, on right: 49 53
+op_ad (72)
+    on left: 55 56, on right: 53
+termo (73)
+    on left: 57, on right: 49 53
+mais_fatores (74)
+    on left: 58 59, on right: 57 58
+op_mul (75)
+    on left: 60 61, on right: 58
+fator (76)
+    on left: 62 63 64, on right: 57 58
+var_numero (77)
+    on left: 65 66, on right: 4 63
+
+
+State 0
+
+    0 $accept: . programa $end
+
+    lalg_program  shift, and go to state 1
+
+    programa  go to state 2
+
+
+State 1
+
+    1 programa: lalg_program . var_identifier lalg_semicolon corpo lalg_period
+
+    var_identifier  shift, and go to state 3
+
+
+State 2
+
+    0 $accept: programa . $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 programa: lalg_program var_identifier . lalg_semicolon corpo lalg_period
+
+    lalg_semicolon  shift, and go to state 5
+
+
+State 4
+
+    0 $accept: programa $end .
+
+    $default  accept
+
+
+State 5
+
+    1 programa: lalg_program var_identifier lalg_semicolon . corpo lalg_period
+
+    lalg_const  shift, and go to state 6
+
+    $default  reduce using rule 5 (dc_c)
+
+    corpo  go to state 7
+    dc     go to state 8
+    dc_c   go to state 9
+
+
+State 6
+
+    4 dc_c: lalg_const . var_identifier lalg_equal var_numero lalg_semicolon dc_c
+    6     | lalg_const . error
+
+    error           shift, and go to state 10
+    var_identifier  shift, and go to state 11
+
+
+State 7
+
+    1 programa: lalg_program var_identifier lalg_semicolon corpo . lalg_period
+
+    lalg_period  shift, and go to state 12
+
+
+State 8
+
+    2 corpo: dc . lalg_begin comandos lalg_end
+
+    lalg_begin  shift, and go to state 13
+
+
+State 9
+
+    3 dc: dc_c . dc_v dc_p dc_f
+
+    lalg_var  shift, and go to state 14
+
+    $default  reduce using rule 8 (dc_v)
+
+    dc_v  go to state 15
+
+
+State 10
+
+    6 dc_c: lalg_const error .
+
+    $default  reduce using rule 6 (dc_c)
+
+
+State 11
+
+    4 dc_c: lalg_const var_identifier . lalg_equal var_numero lalg_semicolon dc_c
+
+    lalg_equal  shift, and go to state 16
+
+
+State 12
+
+    1 programa: lalg_program var_identifier lalg_semicolon corpo lalg_period .
+
+    $default  reduce using rule 1 (programa)
+
+
+State 13
+
+    2 corpo: dc lalg_begin . comandos lalg_end
+
+    var_identifier  shift, and go to state 17
+    lalg_begin      shift, and go to state 18
+    lalg_read       shift, and go to state 19
+    lalg_write      shift, and go to state 20
+    lalg_while      shift, and go to state 21
+    lalg_for        shift, and go to state 22
+    lalg_if         shift, and go to state 23
+
+    $default  reduce using rule 33 (comandos)
+
+    comandos  go to state 24
+    cmd       go to state 25
+
+
+State 14
+
+    7 dc_v: lalg_var . variaveis lalg_colon tipo_var lalg_semicolon dc_v
+
+    var_identifier  shift, and go to state 26
+
+    variaveis  go to state 27
+
+
+State 15
+
+    3 dc: dc_c dc_v . dc_p dc_f
+
+    lalg_procedure  shift, and go to state 28
+
+    $default  reduce using rule 15 (dc_p)
+
+    dc_p  go to state 29
+
+
+State 16
+
+    4 dc_c: lalg_const var_identifier lalg_equal . var_numero lalg_semicolon dc_c
+
+    var_real     shift, and go to state 30
+    var_integer  shift, and go to state 31
+
+    var_numero  go to state 32
+
+
+State 17
+
+   39 cmd: var_identifier . lalg_assignment expressao
+   40    | var_identifier . lista_arg
+
+    lalg_assignment  shift, and go to state 33
+    lalg_leftp       shift, and go to state 34
+
+    $default  reduce using rule 26 (lista_arg)
+
+    lista_arg  go to state 35
+
+
+State 18
+
+   41 cmd: lalg_begin . comandos lalg_end
+
+    var_identifier  shift, and go to state 17
+    lalg_begin      shift, and go to state 18
+    lalg_read       shift, and go to state 19
+    lalg_write      shift, and go to state 20
+    lalg_while      shift, and go to state 21
+    lalg_for        shift, and go to state 22
+    lalg_if         shift, and go to state 23
+
+    $default  reduce using rule 33 (comandos)
+
+    comandos  go to state 36
+    cmd       go to state 25
+
+
+State 19
+
+   34 cmd: lalg_read . lalg_leftp variaveis lalg_rightp
+
+    lalg_leftp  shift, and go to state 37
+
+
+State 20
+
+   35 cmd: lalg_write . lalg_leftp variaveis lalg_rightp
+
+    lalg_leftp  shift, and go to state 38
+
+
+State 21
+
+   36 cmd: lalg_while . lalg_leftp condicao lalg_rightp lalg_do cmd
+
+    lalg_leftp  shift, and go to state 39
+
+
+State 22
+
+   37 cmd: lalg_for . var_identifier lalg_assignment expressao lalg_to expressao lalg_do cmd
+
+    var_identifier  shift, and go to state 40
+
+
+State 23
+
+   38 cmd: lalg_if . condicao lalg_then cmd pfalsa
+
+    lalg_add  shift, and go to state 41
+    lalg_sub  shift, and go to state 42
+
+    $default  reduce using rule 52 (op_un)
+
+    condicao   go to state 43
+    expressao  go to state 44
+    op_un      go to state 45
+    termo      go to state 46
+
+
+State 24
+
+    2 corpo: dc lalg_begin comandos . lalg_end
+
+    lalg_end  shift, and go to state 47
+
+
+State 25
+
+   32 comandos: cmd . lalg_semicolon comandos
+
+    lalg_semicolon  shift, and go to state 48
+
+
+State 26
+
+   11 variaveis: var_identifier . mais_var
+
+    lalg_comma  shift, and go to state 49
+
+    $default  reduce using rule 13 (mais_var)
+
+    mais_var  go to state 50
+
+
+State 27
+
+    7 dc_v: lalg_var variaveis . lalg_colon tipo_var lalg_semicolon dc_v
+
+    lalg_colon  shift, and go to state 51
+
+
+State 28
+
+   14 dc_p: lalg_procedure . var_identifier parametros lalg_semicolon corpo_p dc_p
+
+    var_identifier  shift, and go to state 52
+
+
+State 29
+
+    3 dc: dc_c dc_v dc_p . dc_f
+
+    lalg_function  shift, and go to state 53
+
+    $default  reduce using rule 17 (dc_f)
+
+    dc_f  go to state 54
+
+
+State 30
+
+   66 var_numero: var_real .
+
+    $default  reduce using rule 66 (var_numero)
+
+
+State 31
+
+   65 var_numero: var_integer .
+
+    $default  reduce using rule 65 (var_numero)
+
+
+State 32
+
+    4 dc_c: lalg_const var_identifier lalg_equal var_numero . lalg_semicolon dc_c
+
+    lalg_semicolon  shift, and go to state 55
+
+
+State 33
+
+   39 cmd: var_identifier lalg_assignment . expressao
+
+    lalg_add  shift, and go to state 41
+    lalg_sub  shift, and go to state 42
+
+    $default  reduce using rule 52 (op_un)
+
+    expressao  go to state 56
+    op_un      go to state 45
+    termo      go to state 46
+
+
+State 34
+
+   25 lista_arg: lalg_leftp . argumentos lalg_rightp
+
+    var_identifier  shift, and go to state 57
+
+    argumentos  go to state 58
+
+
+State 35
+
+   40 cmd: var_identifier lista_arg .
+
+    $default  reduce using rule 40 (cmd)
+
+
+State 36
+
+   41 cmd: lalg_begin comandos . lalg_end
+
+    lalg_end  shift, and go to state 59
+
+
+State 37
+
+   34 cmd: lalg_read lalg_leftp . variaveis lalg_rightp
+
+    var_identifier  shift, and go to state 26
+
+    variaveis  go to state 60
+
+
+State 38
+
+   35 cmd: lalg_write lalg_leftp . variaveis lalg_rightp
+
+    var_identifier  shift, and go to state 26
+
+    variaveis  go to state 61
+
+
+State 39
+
+   36 cmd: lalg_while lalg_leftp . condicao lalg_rightp lalg_do cmd
+
+    lalg_add  shift, and go to state 41
+    lalg_sub  shift, and go to state 42
+
+    $default  reduce using rule 52 (op_un)
+
+    condicao   go to state 62
+    expressao  go to state 44
+    op_un      go to state 45
+    termo      go to state 46
+
+
+State 40
+
+   37 cmd: lalg_for var_identifier . lalg_assignment expressao lalg_to expressao lalg_do cmd
+
+    lalg_assignment  shift, and go to state 63
+
+
+State 41
+
+   50 op_un: lalg_add .
+
+    $default  reduce using rule 50 (op_un)
+
+
+State 42
+
+   51 op_un: lalg_sub .
+
+    $default  reduce using rule 51 (op_un)
+
+
+State 43
+
+   38 cmd: lalg_if condicao . lalg_then cmd pfalsa
+
+    lalg_then  shift, and go to state 64
+
+
+State 44
+
+   42 condicao: expressao . relacao expressao
+
+    lalg_equal    shift, and go to state 65
+    lalg_n_equal  shift, and go to state 66
+    lalg_g_than   shift, and go to state 67
+    lalg_l_than   shift, and go to state 68
+    lalg_ge_than  shift, and go to state 69
+    lalg_le_than  shift, and go to state 70
+
+    relacao  go to state 71
+
+
+State 45
+
+   57 termo: op_un . fator mais_fatores
+
+    var_identifier  shift, and go to state 72
+    var_real        shift, and go to state 30
+    var_integer     shift, and go to state 31
+    lalg_leftp      shift, and go to state 73
+
+    fator       go to state 74
+    var_numero  go to state 75
+
+
+State 46
+
+   49 expressao: termo . outros_termos
+
+    lalg_add  shift, and go to state 76
+    lalg_sub  shift, and go to state 77
+
+    $default  reduce using rule 54 (outros_termos)
+
+    outros_termos  go to state 78
+    op_ad          go to state 79
+
+
+State 47
+
+    2 corpo: dc lalg_begin comandos lalg_end .
+
+    $default  reduce using rule 2 (corpo)
+
+
+State 48
+
+   32 comandos: cmd lalg_semicolon . comandos
+
+    var_identifier  shift, and go to state 17
+    lalg_begin      shift, and go to state 18
+    lalg_read       shift, and go to state 19
+    lalg_write      shift, and go to state 20
+    lalg_while      shift, and go to state 21
+    lalg_for        shift, and go to state 22
+    lalg_if         shift, and go to state 23
+
+    $default  reduce using rule 33 (comandos)
+
+    comandos  go to state 80
+    cmd       go to state 25
+
+
+State 49
+
+   12 mais_var: lalg_comma . variaveis
+
+    var_identifier  shift, and go to state 26
+
+    variaveis  go to state 81
+
+
+State 50
+
+   11 variaveis: var_identifier mais_var .
+
+    $default  reduce using rule 11 (variaveis)
+
+
+State 51
+
+    7 dc_v: lalg_var variaveis lalg_colon . tipo_var lalg_semicolon dc_v
+
+    lalg_integer  shift, and go to state 82
+    lalg_real     shift, and go to state 83
+
+    tipo_var  go to state 84
+
+
+State 52
+
+   14 dc_p: lalg_procedure var_identifier . parametros lalg_semicolon corpo_p dc_p
+
+    lalg_leftp  shift, and go to state 85
+
+    $default  reduce using rule 19 (parametros)
+
+    parametros  go to state 86
+
+
+State 53
+
+   16 dc_f: lalg_function . var_identifier parametros lalg_colon tipo_var corpo_p dc_f
+
+    var_identifier  shift, and go to state 87
+
+
+State 54
+
+    3 dc: dc_c dc_v dc_p dc_f .
+
+    $default  reduce using rule 3 (dc)
+
+
+State 55
+
+    4 dc_c: lalg_const var_identifier lalg_equal var_numero lalg_semicolon . dc_c
+
+    lalg_const  shift, and go to state 6
+
+    $default  reduce using rule 5 (dc_c)
+
+    dc_c  go to state 88
+
+
+State 56
+
+   39 cmd: var_identifier lalg_assignment expressao .
+
+    $default  reduce using rule 39 (cmd)
+
+
+State 57
+
+   27 argumentos: var_identifier . mais_ident
+
+    lalg_semicolon  shift, and go to state 89
+
+    $default  reduce using rule 29 (mais_ident)
+
+    mais_ident  go to state 90
+
+
+State 58
+
+   25 lista_arg: lalg_leftp argumentos . lalg_rightp
+
+    lalg_rightp  shift, and go to state 91
+
+
+State 59
+
+   41 cmd: lalg_begin comandos lalg_end .
+
+    $default  reduce using rule 41 (cmd)
+
+
+State 60
+
+   34 cmd: lalg_read lalg_leftp variaveis . lalg_rightp
+
+    lalg_rightp  shift, and go to state 92
+
+
+State 61
+
+   35 cmd: lalg_write lalg_leftp variaveis . lalg_rightp
+
+    lalg_rightp  shift, and go to state 93
+
+
+State 62
+
+   36 cmd: lalg_while lalg_leftp condicao . lalg_rightp lalg_do cmd
+
+    lalg_rightp  shift, and go to state 94
+
+
+State 63
+
+   37 cmd: lalg_for var_identifier lalg_assignment . expressao lalg_to expressao lalg_do cmd
+
+    lalg_add  shift, and go to state 41
+    lalg_sub  shift, and go to state 42
+
+    $default  reduce using rule 52 (op_un)
+
+    expressao  go to state 95
+    op_un      go to state 45
+    termo      go to state 46
+
+
+State 64
+
+   38 cmd: lalg_if condicao lalg_then . cmd pfalsa
+
+    var_identifier  shift, and go to state 17
+    lalg_begin      shift, and go to state 18
+    lalg_read       shift, and go to state 19
+    lalg_write      shift, and go to state 20
+    lalg_while      shift, and go to state 21
+    lalg_for        shift, and go to state 22
+    lalg_if         shift, and go to state 23
+
+    cmd  go to state 96
+
+
+State 65
+
+   43 relacao: lalg_equal .
+
+    $default  reduce using rule 43 (relacao)
+
+
+State 66
+
+   44 relacao: lalg_n_equal .
+
+    $default  reduce using rule 44 (relacao)
+
+
+State 67
+
+   45 relacao: lalg_g_than .
+
+    $default  reduce using rule 45 (relacao)
+
+
+State 68
+
+   46 relacao: lalg_l_than .
+
+    $default  reduce using rule 46 (relacao)
+
+
+State 69
+
+   47 relacao: lalg_ge_than .
+
+    $default  reduce using rule 47 (relacao)
+
+
+State 70
+
+   48 relacao: lalg_le_than .
+
+    $default  reduce using rule 48 (relacao)
+
+
+State 71
+
+   42 condicao: expressao relacao . expressao
+
+    lalg_add  shift, and go to state 41
+    lalg_sub  shift, and go to state 42
+
+    $default  reduce using rule 52 (op_un)
+
+    expressao  go to state 97
+    op_un      go to state 45
+    termo      go to state 46
+
+
+State 72
+
+   62 fator: var_identifier .
+
+    $default  reduce using rule 62 (fator)
+
+
+State 73
+
+   64 fator: lalg_leftp . expressao lalg_rightp
+
+    lalg_add  shift, and go to state 41
+    lalg_sub  shift, and go to state 42
+
+    $default  reduce using rule 52 (op_un)
+
+    expressao  go to state 98
+    op_un      go to state 45
+    termo      go to state 46
+
+
+State 74
+
+   57 termo: op_un fator . mais_fatores
+
+    lalg_mul  shift, and go to state 99
+    lalg_div  shift, and go to state 100
+
+    $default  reduce using rule 59 (mais_fatores)
+
+    mais_fatores  go to state 101
+    op_mul        go to state 102
+
+
+State 75
+
+   63 fator: var_numero .
+
+    $default  reduce using rule 63 (fator)
+
+
+State 76
+
+   55 op_ad: lalg_add .
+
+    $default  reduce using rule 55 (op_ad)
+
+
+State 77
+
+   56 op_ad: lalg_sub .
+
+    $default  reduce using rule 56 (op_ad)
+
+
+State 78
+
+   49 expressao: termo outros_termos .
+
+    $default  reduce using rule 49 (expressao)
+
+
+State 79
+
+   53 outros_termos: op_ad . termo outros_termos
+
+    lalg_add  shift, and go to state 41
+    lalg_sub  shift, and go to state 42
+
+    $default  reduce using rule 52 (op_un)
+
+    op_un  go to state 45
+    termo  go to state 103
+
+
+State 80
+
+   32 comandos: cmd lalg_semicolon comandos .
+
+    $default  reduce using rule 32 (comandos)
+
+
+State 81
+
+   12 mais_var: lalg_comma variaveis .
+
+    $default  reduce using rule 12 (mais_var)
+
+
+State 82
+
+   10 tipo_var: lalg_integer .
+
+    $default  reduce using rule 10 (tipo_var)
+
+
+State 83
+
+    9 tipo_var: lalg_real .
+
+    $default  reduce using rule 9 (tipo_var)
+
+
+State 84
+
+    7 dc_v: lalg_var variaveis lalg_colon tipo_var . lalg_semicolon dc_v
+
+    lalg_semicolon  shift, and go to state 104
+
+
+State 85
+
+   18 parametros: lalg_leftp . lista_par lalg_rightp
+
+    var_identifier  shift, and go to state 26
+
+    variaveis  go to state 105
+    lista_par  go to state 106
+
+
+State 86
+
+   14 dc_p: lalg_procedure var_identifier parametros . lalg_semicolon corpo_p dc_p
+
+    lalg_semicolon  shift, and go to state 107
+
+
+State 87
+
+   16 dc_f: lalg_function var_identifier . parametros lalg_colon tipo_var corpo_p dc_f
+
+    lalg_leftp  shift, and go to state 85
+
+    $default  reduce using rule 19 (parametros)
+
+    parametros  go to state 108
+
+
+State 88
+
+    4 dc_c: lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c .
+
+    $default  reduce using rule 4 (dc_c)
+
+
+State 89
+
+   28 mais_ident: lalg_semicolon . argumentos
+
+    var_identifier  shift, and go to state 57
+
+    argumentos  go to state 109
+
+
+State 90
+
+   27 argumentos: var_identifier mais_ident .
+
+    $default  reduce using rule 27 (argumentos)
+
+
+State 91
+
+   25 lista_arg: lalg_leftp argumentos lalg_rightp .
+
+    $default  reduce using rule 25 (lista_arg)
+
+
+State 92
+
+   34 cmd: lalg_read lalg_leftp variaveis lalg_rightp .
+
+    $default  reduce using rule 34 (cmd)
+
+
+State 93
+
+   35 cmd: lalg_write lalg_leftp variaveis lalg_rightp .
+
+    $default  reduce using rule 35 (cmd)
+
+
+State 94
+
+   36 cmd: lalg_while lalg_leftp condicao lalg_rightp . lalg_do cmd
+
+    lalg_do  shift, and go to state 110
+
+
+State 95
+
+   37 cmd: lalg_for var_identifier lalg_assignment expressao . lalg_to expressao lalg_do cmd
+
+    lalg_to  shift, and go to state 111
+
+
+State 96
+
+   38 cmd: lalg_if condicao lalg_then cmd . pfalsa
+
+    lalg_else  shift, and go to state 112
+
+    lalg_else  [reduce using rule 31 (pfalsa)]
+    $default   reduce using rule 31 (pfalsa)
+
+    pfalsa  go to state 113
+
+
+State 97
+
+   42 condicao: expressao relacao expressao .
+
+    $default  reduce using rule 42 (condicao)
+
+
+State 98
+
+   64 fator: lalg_leftp expressao . lalg_rightp
+
+    lalg_rightp  shift, and go to state 114
+
+
+State 99
+
+   60 op_mul: lalg_mul .
+
+    $default  reduce using rule 60 (op_mul)
+
+
+State 100
+
+   61 op_mul: lalg_div .
+
+    $default  reduce using rule 61 (op_mul)
+
+
+State 101
+
+   57 termo: op_un fator mais_fatores .
+
+    $default  reduce using rule 57 (termo)
+
+
+State 102
+
+   58 mais_fatores: op_mul . fator mais_fatores
+
+    var_identifier  shift, and go to state 72
+    var_real        shift, and go to state 30
+    var_integer     shift, and go to state 31
+    lalg_leftp      shift, and go to state 73
+
+    fator       go to state 115
+    var_numero  go to state 75
+
+
+State 103
+
+   53 outros_termos: op_ad termo . outros_termos
+
+    lalg_add  shift, and go to state 76
+    lalg_sub  shift, and go to state 77
+
+    $default  reduce using rule 54 (outros_termos)
+
+    outros_termos  go to state 116
+    op_ad          go to state 79
+
+
+State 104
+
+    7 dc_v: lalg_var variaveis lalg_colon tipo_var lalg_semicolon . dc_v
+
+    lalg_var  shift, and go to state 14
+
+    $default  reduce using rule 8 (dc_v)
+
+    dc_v  go to state 117
+
+
+State 105
+
+   20 lista_par: variaveis . lalg_colon tipo_var mais_par
+
+    lalg_colon  shift, and go to state 118
+
+
+State 106
+
+   18 parametros: lalg_leftp lista_par . lalg_rightp
+
+    lalg_rightp  shift, and go to state 119
+
+
+State 107
+
+   14 dc_p: lalg_procedure var_identifier parametros lalg_semicolon . corpo_p dc_p
+
+    lalg_var  shift, and go to state 14
+
+    $default  reduce using rule 8 (dc_v)
+
+    dc_v     go to state 120
+    corpo_p  go to state 121
+    dc_loc   go to state 122
+
+
+State 108
+
+   16 dc_f: lalg_function var_identifier parametros . lalg_colon tipo_var corpo_p dc_f
+
+    lalg_colon  shift, and go to state 123
+
+
+State 109
+
+   28 mais_ident: lalg_semicolon argumentos .
+
+    $default  reduce using rule 28 (mais_ident)
+
+
+State 110
+
+   36 cmd: lalg_while lalg_leftp condicao lalg_rightp lalg_do . cmd
+
+    var_identifier  shift, and go to state 17
+    lalg_begin      shift, and go to state 18
+    lalg_read       shift, and go to state 19
+    lalg_write      shift, and go to state 20
+    lalg_while      shift, and go to state 21
+    lalg_for        shift, and go to state 22
+    lalg_if         shift, and go to state 23
+
+    cmd  go to state 124
+
+
+State 111
+
+   37 cmd: lalg_for var_identifier lalg_assignment expressao lalg_to . expressao lalg_do cmd
+
+    lalg_add  shift, and go to state 41
+    lalg_sub  shift, and go to state 42
+
+    $default  reduce using rule 52 (op_un)
+
+    expressao  go to state 125
+    op_un      go to state 45
+    termo      go to state 46
+
+
+State 112
+
+   30 pfalsa: lalg_else . cmd
+
+    var_identifier  shift, and go to state 17
+    lalg_begin      shift, and go to state 18
+    lalg_read       shift, and go to state 19
+    lalg_write      shift, and go to state 20
+    lalg_while      shift, and go to state 21
+    lalg_for        shift, and go to state 22
+    lalg_if         shift, and go to state 23
+
+    cmd  go to state 126
+
+
+State 113
+
+   38 cmd: lalg_if condicao lalg_then cmd pfalsa .
+
+    $default  reduce using rule 38 (cmd)
+
+
+State 114
+
+   64 fator: lalg_leftp expressao lalg_rightp .
+
+    $default  reduce using rule 64 (fator)
+
+
+State 115
+
+   58 mais_fatores: op_mul fator . mais_fatores
+
+    lalg_mul  shift, and go to state 99
+    lalg_div  shift, and go to state 100
+
+    $default  reduce using rule 59 (mais_fatores)
+
+    mais_fatores  go to state 127
+    op_mul        go to state 102
+
+
+State 116
+
+   53 outros_termos: op_ad termo outros_termos .
+
+    $default  reduce using rule 53 (outros_termos)
+
+
+State 117
+
+    7 dc_v: lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v .
+
+    $default  reduce using rule 7 (dc_v)
+
+
+State 118
+
+   20 lista_par: variaveis lalg_colon . tipo_var mais_par
+
+    lalg_integer  shift, and go to state 82
+    lalg_real     shift, and go to state 83
+
+    tipo_var  go to state 128
+
+
+State 119
+
+   18 parametros: lalg_leftp lista_par lalg_rightp .
+
+    $default  reduce using rule 18 (parametros)
+
+
+State 120
+
+   24 dc_loc: dc_v .
+
+    $default  reduce using rule 24 (dc_loc)
+
+
+State 121
+
+   14 dc_p: lalg_procedure var_identifier parametros lalg_semicolon corpo_p . dc_p
+
+    lalg_procedure  shift, and go to state 28
+
+    $default  reduce using rule 15 (dc_p)
+
+    dc_p  go to state 129
+
+
+State 122
+
+   23 corpo_p: dc_loc . lalg_begin comandos lalg_end lalg_semicolon
+
+    lalg_begin  shift, and go to state 130
+
+
+State 123
+
+   16 dc_f: lalg_function var_identifier parametros lalg_colon . tipo_var corpo_p dc_f
+
+    lalg_integer  shift, and go to state 82
+    lalg_real     shift, and go to state 83
+
+    tipo_var  go to state 131
+
+
+State 124
+
+   36 cmd: lalg_while lalg_leftp condicao lalg_rightp lalg_do cmd .
+
+    $default  reduce using rule 36 (cmd)
+
+
+State 125
+
+   37 cmd: lalg_for var_identifier lalg_assignment expressao lalg_to expressao . lalg_do cmd
+
+    lalg_do  shift, and go to state 132
+
+
+State 126
+
+   30 pfalsa: lalg_else cmd .
+
+    $default  reduce using rule 30 (pfalsa)
+
+
+State 127
+
+   58 mais_fatores: op_mul fator mais_fatores .
+
+    $default  reduce using rule 58 (mais_fatores)
+
+
+State 128
+
+   20 lista_par: variaveis lalg_colon tipo_var . mais_par
+
+    lalg_semicolon  shift, and go to state 133
+
+    $default  reduce using rule 22 (mais_par)
+
+    mais_par  go to state 134
+
+
+State 129
+
+   14 dc_p: lalg_procedure var_identifier parametros lalg_semicolon corpo_p dc_p .
+
+    $default  reduce using rule 14 (dc_p)
+
+
+State 130
+
+   23 corpo_p: dc_loc lalg_begin . comandos lalg_end lalg_semicolon
+
+    var_identifier  shift, and go to state 17
+    lalg_begin      shift, and go to state 18
+    lalg_read       shift, and go to state 19
+    lalg_write      shift, and go to state 20
+    lalg_while      shift, and go to state 21
+    lalg_for        shift, and go to state 22
+    lalg_if         shift, and go to state 23
+
+    $default  reduce using rule 33 (comandos)
+
+    comandos  go to state 135
+    cmd       go to state 25
+
+
+State 131
+
+   16 dc_f: lalg_function var_identifier parametros lalg_colon tipo_var . corpo_p dc_f
+
+    lalg_var  shift, and go to state 14
+
+    $default  reduce using rule 8 (dc_v)
+
+    dc_v     go to state 120
+    corpo_p  go to state 136
+    dc_loc   go to state 122
+
+
+State 132
+
+   37 cmd: lalg_for var_identifier lalg_assignment expressao lalg_to expressao lalg_do . cmd
+
+    var_identifier  shift, and go to state 17
+    lalg_begin      shift, and go to state 18
+    lalg_read       shift, and go to state 19
+    lalg_write      shift, and go to state 20
+    lalg_while      shift, and go to state 21
+    lalg_for        shift, and go to state 22
+    lalg_if         shift, and go to state 23
+
+    cmd  go to state 137
+
+
+State 133
+
+   21 mais_par: lalg_semicolon . lista_par
+
+    var_identifier  shift, and go to state 26
+
+    variaveis  go to state 105
+    lista_par  go to state 138
+
+
+State 134
+
+   20 lista_par: variaveis lalg_colon tipo_var mais_par .
+
+    $default  reduce using rule 20 (lista_par)
+
+
+State 135
+
+   23 corpo_p: dc_loc lalg_begin comandos . lalg_end lalg_semicolon
+
+    lalg_end  shift, and go to state 139
+
+
+State 136
+
+   16 dc_f: lalg_function var_identifier parametros lalg_colon tipo_var corpo_p . dc_f
+
+    lalg_function  shift, and go to state 53
+
+    $default  reduce using rule 17 (dc_f)
+
+    dc_f  go to state 140
+
+
+State 137
+
+   37 cmd: lalg_for var_identifier lalg_assignment expressao lalg_to expressao lalg_do cmd .
+
+    $default  reduce using rule 37 (cmd)
+
+
+State 138
+
+   21 mais_par: lalg_semicolon lista_par .
+
+    $default  reduce using rule 21 (mais_par)
+
+
+State 139
+
+   23 corpo_p: dc_loc lalg_begin comandos lalg_end . lalg_semicolon
+
+    lalg_semicolon  shift, and go to state 141
+
+
+State 140
+
+   16 dc_f: lalg_function var_identifier parametros lalg_colon tipo_var corpo_p dc_f .
+
+    $default  reduce using rule 16 (dc_f)
+
+
+State 141
+
+   23 corpo_p: dc_loc lalg_begin comandos lalg_end lalg_semicolon .
+
+    $default  reduce using rule 23 (corpo_p)
