@@ -80,13 +80,24 @@ dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c
 	| %empty 
 	| lalg_const error 
 	{ 
+		printf("dc_c error\n");
 		int syncArray[] = { lalg_var, lalg_begin };
 		yyclearin;
 		yyerrok;
 		panic(syncArray, 2);
 	};
 
-dc_v : lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v | %empty; 
+dc_v : lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v 
+	| %empty
+	| error
+	{ 
+		printf("dc_v error\n");
+		int syncArray[] = { lalg_procedure, lalg_begin };
+		yyclearin;
+		yyerrok;
+		panic(syncArray, 2);
+	};
+
 
 tipo_var : lalg_real | lalg_integer;
 
@@ -194,6 +205,7 @@ int verifyToken(int* syncArray, int size, int token)
 	int i;
 	for(i = 0; i < size; i++)
 	{
+		//printf("looping: token: %d syncarray[i]: %d\n", token, syncArray[i]);
 		if(token == syncArray[i])
 		{
 			return i;
@@ -208,13 +220,15 @@ void panic(int* array, int size)
 {
         int tokenTest = 0;
 
-        printf("** Entering in panic mode **\n");
+        //printf("buffer_counter: %d\n", buffer_counter);
+	
+        //printf("** Entering in panic mode **\n");
 	// Getting the next token
         tokenTest = yylex();
 
 	// Keep skipping tokens until you find the syncronization token or the file ends
-        while(verifyToken(array, size, tokenTest) && tokenTest != 0){
-                printf("Token skipped: %s\n", yylval.str);
+        while(verifyToken(array, size, tokenTest) < 0 && tokenTest != 0){
+                printf("Token skipped: \'%s\' - code: %d\n", yylval.str, tokenTest);
                 tokenTest = yylex();
         }
 	// Pushing the string into flex intenal stack
