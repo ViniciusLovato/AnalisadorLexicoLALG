@@ -10,7 +10,7 @@
 
 void printInitBufferStatus();
 void printBufferStatus();
-int buffer_counter = 1;
+int buffer_counter;
 YY_BUFFER_STATE init_buffer;
 
 %}
@@ -85,58 +85,51 @@ YY_BUFFER_STATE init_buffer;
 
 %%
 
-void initBuffers()
+// Function that pushes the yyin buffer in the stack
+void createInitBuffer()
 {
-	// starting the stack
+	buffer_counter = 1;
+	// Initializing the buffer
 	init_buffer = yy_create_buffer(yyin, YY_BUF_SIZE);
+	// Pushing the buffer into the stack
 	yypush_buffer_state(init_buffer);
 }
 
-void printInitBufferStatus()
+void pushBuffer(char *str)
 {
-	printf("**********************************************\n");
-	printf("INIT BUFFER STATUS\n");
-	printf("**********************************************\n");
- 	printf("%s\n", init_buffer->yy_ch_buf);
-	printf("**********************************************\n");
-	printf("CURRENT POSITION: %s\n", init_buffer->yy_buf_pos);
-	printf("**********************************************\n");
-	printf("**********************************************\n\n\n");
+	// Saving the current buffer
+	YY_BUFFER_STATE current = YY_CURRENT_BUFFER;
+	// Creating the string buffer (side effect: it automatic switches to this buffer)
+	YY_BUFFER_STATE string = yy_scan_string(yylval.str);
+	// Returning to the current buffer
+	yy_switch_to_buffer(current);
+	// Pushing the string buffer in the stack
+	yypush_buffer_state(string);
 }
 
-void printBufferStatus()
+// Function that destroy the init buffer 
+void destroyInitBuffer()
 {
-	printf("**********************************************\n");
-	printf("BUFFER STATUS\n");
-	printf("**********************************************\n");
- 	printf("%s\n", YY_CURRENT_BUFFER->yy_ch_buf);
-	printf("**********************************************\n");
-	printf("CURRENT POSITION: %s\n", YY_CURRENT_BUFFER->yy_buf_pos);
-	printf("**********************************************\n");
-	printf("**********************************************\n\n\n");
+	yy_delete_buffer(init_buffer);
 }
 
-int yywrap1(void)
-{
-	return 1;
-}
-
+// Function that decides what to do when you reach the end of a file
 int yywrap(void){
 
+	// decreases buffer counter
 	--buffer_counter;
-	yy_switch_to_buffer(init_buffer);
+	// pop the buffer state
+	yypop_buffer_state();
 
-	printf("BC: %d\n", buffer_counter);
+	// if there is only one buffer stop concatenating files
 	if(buffer_counter <= 1)
 	{
 		
-		printf("terminated\n");
 		return 1;
-		yyterminate();
-		//yypop_buffer_state();
 	}
 	else
 	{
+		// send a signal to concatenate next buffer 
 		return 0;
 	}
 }

@@ -163,19 +163,29 @@ int syncArrayVariaveis[] = { lalg_colon, lalg_rightp };
 int syncArrayMaisVar[] = { lalg_colon, lalg_rightp };
 int syncArrayDcp[] = { lalg_begin };
 
+// Function that prints the error message
 void yyerror(char *s)
 {
-        fprintf(stderr, "Parser: erro %s na linha %d, token \'%s\' nao esperado\n", s, yylineno, yylval.str);
+        fprintf(stderr, "Parser: %s na linha %d, token \'%s\' nao esperado\n", s, yylineno, yylval.str);
 }
 
 int main(int argc, char **argv)
 {
+	int status;
+
+	// Uncomment his flag to turn debug mode on for the parser
 	//yydebug = 1;
+
+	// Checks if the program has 1 argument and pass it as a program to be analized
 	if(argc == 2)
 		yyin = fopen(argv[1], "r");
 
-	initBuffers();
-	return yyparse();
+	// Creating the init buffer and pushing it into flex internal stack
+	createInitBuffer();
+	// Parsing the file and saving the status 
+	status = yyparse();
+
+	return (status);
 }
 
 // Function that verifies if a token belongs to the syncArray
@@ -184,7 +194,6 @@ int verifyToken(int* syncArray, int size, int token)
 	int i;
 	for(i = 0; i < size; i++)
 	{
-                printf("Tokens eval: %d\n", syncArray[i]);
 		if(token == syncArray[i])
 		{
 			return i;
@@ -194,21 +203,23 @@ int verifyToken(int* syncArray, int size, int token)
 	return(-1);
 }
 
+// Function that implements the panic mode error recovery
 void panic(int* array, int size)
 {
         int tokenTest = 0;
 
         printf("** Entering in panic mode **\n");
+	// Getting the next token
         tokenTest = yylex();
 
+	// Keep skipping tokens until you find the syncronization token or the file ends
         while(verifyToken(array, size, tokenTest) && tokenTest != 0){
-                printf("Tokens skipped: %d\n", tokenTest);
+                printf("Token skipped: %s\n", yylval.str);
                 tokenTest = yylex();
         }
-
-        printf("** antes push **\n");
-	//yypush_buffer_state(yy_scan_string(yylval.str));
-	yy_switch_to_buffer(yy_scan_string(yylval.str));
+	// Pushing the string into flex intenal stack
+	pushBuffer(yylval.str);
+	// Increase the buffer counter 
 	++buffer_counter;
 
 	printf("** Exiting in panic mode **\n");
