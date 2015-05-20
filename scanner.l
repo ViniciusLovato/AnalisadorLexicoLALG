@@ -72,10 +72,11 @@ YY_BUFFER_STATE init_buffer;
 "{".*"}"		;
 
 <<EOF>> {
-		printf("End of file or string\n");
+		// Removing buffer from the stack
 		yypop_buffer_state();
+		// Checking if there are buffers to scan
 		if(!YY_CURRENT_BUFFER)
-			return 0;
+			return 0; // Sending EOF signal to parser
 	};
 
 [a-zA-Z]+([^a-zA-Z0-9_\d\n\t\{\}\:\;\,\.\+\-\*\\/\(\)\=\+\-\"\'\>\< ]+[a-zA-Z0-9_]*)*		return ERROR_INVALID_IDENTIFIER;
@@ -93,6 +94,7 @@ void createInitBuffer()
 	yypush_buffer_state(init_buffer);
 }
 
+// Function that pushes buffers into the internal flex stack 
 void pushBuffer(char *str)
 {
 	// Saving the current buffer
@@ -111,30 +113,7 @@ void destroyInitBuffer()
 	yy_delete_buffer(init_buffer);
 }
 
-
 int yywrap(void)
 {
 	return 1;
-}
-
-// Function that decides what to do when you reach the end of a file
-int yywrap1(void){
-
-	int buffer_counter = 0;
-	// decreases buffer counter
-	--buffer_counter;
-	// pop the buffer state
-	yypop_buffer_state();
-
-	// if there is only one buffer stop concatenating files
-	if(buffer_counter <= 1)
-	{
-		
-		return 1;
-	}
-	else
-	{
-		// send a signal to concatenate next buffer 
-		return 0;
-	}
 }

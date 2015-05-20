@@ -66,7 +66,6 @@ void panic(int* array, int size);
 %token lalg_then
 %token lalg_else
 
-%debug
 %%
 
 programa : lalg_program var_identifier lalg_semicolon corpo lalg_period;
@@ -415,7 +414,7 @@ int main(int argc, char **argv)
 {
 	int status;
 
-	// Uncomment his flag to turn debug mode on for the parser
+	// Uncomment this flag to turn debug mode on for the parser
 	//yydebug = 1;
 
 	// Checks if the program has 1 argument and pass it as a program to be analized

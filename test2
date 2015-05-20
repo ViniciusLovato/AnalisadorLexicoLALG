@@ -1,7 +1,0 @@
-program lalg;
-{entrada}
-var a: integer;
-a = 100000000000;
-begin
-readd(a, @, 1);
-end.
