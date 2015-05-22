@@ -70,9 +70,27 @@ void panic(int* array, int size);
 
 programa : lalg_program var_identifier lalg_semicolon corpo lalg_period;
 
-corpo : dc lalg_begin comandos lalg_end;
+corpo : dc lalg_begin comandos lalg_end
+	| error 
+	{
+		printf("corpo error\n");
+		int syncArray[] = { lalg_period };
+		yyclearin;
+		yyerrok;
+		panic(syncArray, 1);
 
-dc : dc_c dc_v dc_p dc_f;
+	};
+
+dc : dc_c dc_v dc_p dc_f
+	| error 
+	{
+		printf("dc error\n");
+		int syncArray[] = { lalg_begin };
+		yyclearin;
+		yyerrok;
+		panic(syncArray, 1);
+
+	};
 
 dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c 
 	| %empty 
@@ -452,11 +470,14 @@ void panic(int* array, int size)
 	
         printf("** Entering in panic mode **\n");
 
+	tokenTest = yylex();
+
 	// Keep skipping tokens until you find the syncronization token or the file ends
-	do{
-                tokenTest = yylex();
-                printf("Token skipped: \'%s\' - code: %d\n", yylval.str, tokenTest);
-        }while(verifyToken(array, size, tokenTest) < 0 && tokenTest != 0);
+	while(verifyToken(array, size, tokenTest) < 0 && tokenTest != 0){
+		printf("Token skipped: \'%s\' - code: %d\n", yylval.str, tokenTest);
+		tokenTest = yylex();
+	}
+
 	// Pushing the string into flex intenal stack
 	if(tokenTest != 0)
 	{
