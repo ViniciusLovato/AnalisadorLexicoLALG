@@ -2046,7 +2046,7 @@ int syncArrayDcp[] = { lalg_begin };
 // Function that prints the error message
 void yyerror(char *s)
 {
-	fprintf(stderr, "Parser: %s na linha %d, token \'%s\' nao esperado\n", s, yylineno, yylval.str);
+	fprintf(stderr, "Parser: %s at line %d, token \'%s\' not expected\n", s, yylineno, yylval.str);
 }
 
 int main(int argc, char **argv)
