@@ -7,7 +7,7 @@ var num1 : real;
 begin
 	num1 := 10 + 10;
 	num2 := +num;
-	write(num1)
+	write(num1);
 end;
 
 begin

@@ -66,6 +66,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "symbolTable.c"
 #include <string.h>
 extern int yylineno;
 
@@ -76,8 +77,11 @@ extern FILE* yyin;
 void yyerror(char *s);
 void panic(int* array, int size);
 
+str* symbolTable = NULL;
+str* scope = NULL;
 
-#line 81 "y.tab.c" /* yacc.c:339  */
+
+#line 85 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -205,10 +209,12 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 16 "parser.y" /* yacc.c:355  */
+#line 20 "parser.y" /* yacc.c:355  */
 char* str;
+		int type;
+	   
 
-#line 212 "y.tab.c" /* yacc.c:355  */
+#line 218 "y.tab.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -223,7 +229,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 227 "y.tab.c" /* yacc.c:358  */
+#line 233 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -524,16 +530,16 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    71,    71,    73,    74,    84,    85,    95,    96,    97,
-     106,   107,   108,   118,   118,   119,   129,   130,   140,   140,
-     141,   152,   152,   153,   164,   164,   165,   175,   175,   176,
-     186,   187,   197,   197,   198,   208,   209,   218,   221,   221,
-     222,   232,   233,   242,   242,   243,   253,   253,   254,   264,
-     264,   265,   275,   276,   277,   278,   279,   280,   281,   282,
-     283,   294,   295,   305,   305,   305,   305,   305,   305,   306,
-     316,   317,   327,   327,   327,   328,   338,   338,   339,   349,
-     349,   350,   360,   361,   370,   370,   371,   381,   381,   382,
-     392,   392,   392,   393,   402,   402,   403
+       0,    83,    83,    88,    89,    99,   100,   110,   111,   112,
+     121,   130,   131,   141,   145,   149,   159,   170,   180,   184,
+     188,   199,   199,   200,   211,   211,   212,   222,   222,   223,
+     233,   234,   244,   244,   245,   255,   256,   265,   268,   268,
+     269,   279,   280,   289,   289,   290,   300,   300,   301,   311,
+     311,   312,   322,   323,   324,   325,   326,   327,   328,   329,
+     330,   341,   342,   352,   352,   352,   352,   352,   352,   353,
+     363,   364,   374,   374,   374,   375,   385,   385,   386,   396,
+     396,   397,   407,   408,   417,   417,   418,   428,   428,   429,
+     439,   439,   439,   440,   449,   449,   450
 };
 #endif
 
@@ -1437,8 +1443,16 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 4:
-#line 75 "parser.y" /* yacc.c:1646  */
+        case 2:
+#line 84 "parser.y" /* yacc.c:1646  */
+    {
+		printTable(symbolTable);
+	}
+#line 1452 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 4:
+#line 90 "parser.y" /* yacc.c:1646  */
     {
 		printf("corpo error\n");
 		int syncArray[] = { lalg_period };
@@ -1447,11 +1461,11 @@ yyreduce:
 		panic(syncArray, 1);
 
 	}
-#line 1451 "y.tab.c" /* yacc.c:1646  */
+#line 1465 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 86 "parser.y" /* yacc.c:1646  */
+#line 101 "parser.y" /* yacc.c:1646  */
     {
 		printf("dc error\n");
 		int syncArray[] = { lalg_begin };
@@ -1460,11 +1474,11 @@ yyreduce:
 		panic(syncArray, 1);
 
 	}
-#line 1464 "y.tab.c" /* yacc.c:1646  */
+#line 1478 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 98 "parser.y" /* yacc.c:1646  */
+#line 113 "parser.y" /* yacc.c:1646  */
     { 
 		printf("dc_c error\n");
 		int syncArray[] = { lalg_var, lalg_begin };
@@ -1472,11 +1486,24 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 2);
 	}
-#line 1476 "y.tab.c" /* yacc.c:1646  */
+#line 1490 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 10:
+#line 122 "parser.y" /* yacc.c:1646  */
+    {
+		char* token = strtok((yyvsp[-4].str), " ");
+		while(token){
+			insertSymbol(&symbolTable,token, 1, (yyvsp[-2].type), NULL, scope);
+			token = strtok(NULL, " ");
+		}
+	
+	}
+#line 1503 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 109 "parser.y" /* yacc.c:1646  */
+#line 132 "parser.y" /* yacc.c:1646  */
     { 
 		printf("dc_v error\n");
 		int syncArray[] = { lalg_procedure, lalg_begin };
@@ -1484,11 +1511,27 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 2);
 	}
-#line 1488 "y.tab.c" /* yacc.c:1646  */
+#line 1515 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 13:
+#line 142 "parser.y" /* yacc.c:1646  */
+    {
+		(yyval.type) = 1;
+	}
+#line 1523 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 14:
+#line 146 "parser.y" /* yacc.c:1646  */
+    {
+		(yyval.type) = 0;
+	}
+#line 1531 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 120 "parser.y" /* yacc.c:1646  */
+#line 150 "parser.y" /* yacc.c:1646  */
     { 
 		printf("tipo_var error\n");
 		int syncArray[] = { lalg_semicolon, lalg_rightp };
@@ -1496,11 +1539,26 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 2);
 	}
-#line 1500 "y.tab.c" /* yacc.c:1646  */
+#line 1543 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 16:
+#line 160 "parser.y" /* yacc.c:1646  */
+    {
+		if((yyvsp[0].str) == NULL){
+			(yyvsp[0].str) = (char*) calloc(sizeof(char),1);
+		}
+
+		(yyval.str) = (char*) malloc(sizeof(char) * (strlen((yyvsp[-1].str)) + strlen((yyvsp[0].str)) + 2));
+		strcpy((yyval.str), (yyvsp[-1].str));
+		strcat((yyval.str), " ");
+		strcat((yyval.str), (yyvsp[0].str));
+	}
+#line 1558 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 131 "parser.y" /* yacc.c:1646  */
+#line 171 "parser.y" /* yacc.c:1646  */
     { 
 		printf("variaveis error\n");
 		int syncArray[] = { lalg_colon, lalg_rightp };
@@ -1508,11 +1566,27 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 2);
 	}
-#line 1512 "y.tab.c" /* yacc.c:1646  */
+#line 1570 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 18:
+#line 181 "parser.y" /* yacc.c:1646  */
+    {
+		(yyval.str) = (yyvsp[0].str);
+	}
+#line 1578 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 19:
+#line 185 "parser.y" /* yacc.c:1646  */
+    {
+		(yyval.str) = NULL;
+	}
+#line 1586 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 142 "parser.y" /* yacc.c:1646  */
+#line 189 "parser.y" /* yacc.c:1646  */
     { 
 		printf("mais_var error\n");
 		int syncArray[] = { lalg_colon, lalg_rightp };
@@ -1520,11 +1594,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 2);
 	}
-#line 1524 "y.tab.c" /* yacc.c:1646  */
+#line 1598 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 154 "parser.y" /* yacc.c:1646  */
+#line 201 "parser.y" /* yacc.c:1646  */
     { 
 		printf("procedure error\n");
 		int syncArray[] = { lalg_begin };
@@ -1532,11 +1606,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1536 "y.tab.c" /* yacc.c:1646  */
+#line 1610 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 166 "parser.y" /* yacc.c:1646  */
+#line 213 "parser.y" /* yacc.c:1646  */
     { 
 		printf("function error\n");
 		int syncArray[] = { lalg_begin };
@@ -1544,11 +1618,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1548 "y.tab.c" /* yacc.c:1646  */
+#line 1622 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 177 "parser.y" /* yacc.c:1646  */
+#line 224 "parser.y" /* yacc.c:1646  */
     { 
 		printf("parametros error\n");
 		int syncArray[] = { lalg_semicolon };
@@ -1556,11 +1630,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1560 "y.tab.c" /* yacc.c:1646  */
+#line 1634 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 188 "parser.y" /* yacc.c:1646  */
+#line 235 "parser.y" /* yacc.c:1646  */
     { 
 		printf("lista_par error\n");
 		int syncArray[] = { lalg_rightp };
@@ -1568,11 +1642,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1572 "y.tab.c" /* yacc.c:1646  */
+#line 1646 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 199 "parser.y" /* yacc.c:1646  */
+#line 246 "parser.y" /* yacc.c:1646  */
     { 
 		printf("mais_par error\n");
 		int syncArray[] = { lalg_rightp };
@@ -1580,11 +1654,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1584 "y.tab.c" /* yacc.c:1646  */
+#line 1658 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 210 "parser.y" /* yacc.c:1646  */
+#line 257 "parser.y" /* yacc.c:1646  */
     { 
 		printf("corpo error\n");
 		int syncArray[] = { lalg_procedure, lalg_begin };
@@ -1592,11 +1666,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 2);
 	}
-#line 1596 "y.tab.c" /* yacc.c:1646  */
+#line 1670 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 223 "parser.y" /* yacc.c:1646  */
+#line 270 "parser.y" /* yacc.c:1646  */
     { 
 		printf("lista_arg error\n");
 		int syncArray[] = { lalg_semicolon };
@@ -1604,11 +1678,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1608 "y.tab.c" /* yacc.c:1646  */
+#line 1682 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 234 "parser.y" /* yacc.c:1646  */
+#line 281 "parser.y" /* yacc.c:1646  */
     { 
 		printf("argumentos error\n");
 		int syncArray[] = { lalg_rightp };
@@ -1616,11 +1690,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1620 "y.tab.c" /* yacc.c:1646  */
+#line 1694 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 244 "parser.y" /* yacc.c:1646  */
+#line 291 "parser.y" /* yacc.c:1646  */
     { 
 		printf("mais_ident error\n");
 		int syncArray[] = { lalg_rightp };
@@ -1628,11 +1702,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1632 "y.tab.c" /* yacc.c:1646  */
+#line 1706 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 255 "parser.y" /* yacc.c:1646  */
+#line 302 "parser.y" /* yacc.c:1646  */
     { 
 		printf("pfalsa error\n");
 		int syncArray[] = { lalg_semicolon };
@@ -1640,11 +1714,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1644 "y.tab.c" /* yacc.c:1646  */
+#line 1718 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 266 "parser.y" /* yacc.c:1646  */
+#line 313 "parser.y" /* yacc.c:1646  */
     { 
 		printf("comandos error\n");
 		int syncArray[] = { lalg_end };
@@ -1652,11 +1726,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1656 "y.tab.c" /* yacc.c:1646  */
+#line 1730 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 284 "parser.y" /* yacc.c:1646  */
+#line 331 "parser.y" /* yacc.c:1646  */
     { 
 		printf("cmd error\n");
 		int syncArray[] = { lalg_semicolon };
@@ -1664,11 +1738,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 1);
 	}
-#line 1668 "y.tab.c" /* yacc.c:1646  */
+#line 1742 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 296 "parser.y" /* yacc.c:1646  */
+#line 343 "parser.y" /* yacc.c:1646  */
     { 
 		printf("condicao error\n");
 		int syncArray[] = { lalg_rightp, lalg_then };
@@ -1676,11 +1750,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 2);
 	}
-#line 1680 "y.tab.c" /* yacc.c:1646  */
+#line 1754 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 307 "parser.y" /* yacc.c:1646  */
+#line 354 "parser.y" /* yacc.c:1646  */
     { 
 		printf("relacao error\n");
 		int syncArray[] = { lalg_add, lalg_sub, var_identifier, var_real, var_integer, lalg_leftp };
@@ -1688,11 +1762,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 6);
 	}
-#line 1692 "y.tab.c" /* yacc.c:1646  */
+#line 1766 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 318 "parser.y" /* yacc.c:1646  */
+#line 365 "parser.y" /* yacc.c:1646  */
     { 
 		printf("expressao error\n");
 		int syncArray[] = { lalg_semicolon, lalg_rightp };
@@ -1700,11 +1774,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 2);
 	}
-#line 1704 "y.tab.c" /* yacc.c:1646  */
+#line 1778 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 329 "parser.y" /* yacc.c:1646  */
+#line 376 "parser.y" /* yacc.c:1646  */
     { 
 		printf("op_un error\n");
 		int syncArray[] = { var_identifier, var_real, var_integer, lalg_leftp };
@@ -1712,11 +1786,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 4);
 	}
-#line 1716 "y.tab.c" /* yacc.c:1646  */
+#line 1790 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 340 "parser.y" /* yacc.c:1646  */
+#line 387 "parser.y" /* yacc.c:1646  */
     { 
 		printf("outros_termos error\n");
 		int syncArray[] = { lalg_colon, lalg_rightp };
@@ -1724,11 +1798,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 2);
 	}
-#line 1728 "y.tab.c" /* yacc.c:1646  */
+#line 1802 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 351 "parser.y" /* yacc.c:1646  */
+#line 398 "parser.y" /* yacc.c:1646  */
     { 
 		printf("op_ad error\n");
 		int syncArray[] = { lalg_add, lalg_sub, var_identifier, var_real, var_integer };
@@ -1736,11 +1810,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 5);
 	}
-#line 1740 "y.tab.c" /* yacc.c:1646  */
+#line 1814 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 362 "parser.y" /* yacc.c:1646  */
+#line 409 "parser.y" /* yacc.c:1646  */
     { 
 		printf("termo error\n");
 		int syncArray[] = { lalg_semicolon, lalg_rightp, lalg_add, lalg_sub, var_identifier, var_real, var_integer, lalg_leftp };
@@ -1748,11 +1822,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 8);
 	}
-#line 1752 "y.tab.c" /* yacc.c:1646  */
+#line 1826 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 372 "parser.y" /* yacc.c:1646  */
+#line 419 "parser.y" /* yacc.c:1646  */
     { 
 		printf("mais_fatores error\n");
 		int syncArray[] = { lalg_semicolon, lalg_rightp, lalg_add, lalg_sub };
@@ -1760,11 +1834,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 4);
 	}
-#line 1764 "y.tab.c" /* yacc.c:1646  */
+#line 1838 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 383 "parser.y" /* yacc.c:1646  */
+#line 430 "parser.y" /* yacc.c:1646  */
     { 
 		printf("op_mul error\n");
 		int syncArray[] = { var_identifier, var_real, var_integer, lalg_leftp};
@@ -1772,11 +1846,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 4);
 	}
-#line 1776 "y.tab.c" /* yacc.c:1646  */
+#line 1850 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 394 "parser.y" /* yacc.c:1646  */
+#line 441 "parser.y" /* yacc.c:1646  */
     { 
 		printf("fator error\n");
 		int syncArray[] = { lalg_mul, lalg_div, lalg_add, var_identifier, var_real, var_integer, lalg_leftp};
@@ -1784,11 +1858,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 7);
 	}
-#line 1788 "y.tab.c" /* yacc.c:1646  */
+#line 1862 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 404 "parser.y" /* yacc.c:1646  */
+#line 451 "parser.y" /* yacc.c:1646  */
     { 
 		printf("var_numero error\n");
 		int syncArray[] = { var_identifier, var_real, var_integer, lalg_leftp};
@@ -1796,11 +1870,11 @@ yyreduce:
 		yyerrok;
 		panic(syncArray, 5);
 	}
-#line 1800 "y.tab.c" /* yacc.c:1646  */
+#line 1874 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1804 "y.tab.c" /* yacc.c:1646  */
+#line 1878 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2028,7 +2102,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 411 "parser.y" /* yacc.c:1906  */
+#line 458 "parser.y" /* yacc.c:1906  */
 
 
 #define lalg_EOF 0

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "param.c"
 #include <stdlib.h>
 #include <string.h>
 
@@ -9,7 +10,8 @@ typedef struct str
 	// 0 function
 	// 1 variable
 	int type;
-
+	int type_var;
+	param* parameters;
 	char* identifier;
 
 	// Scope of the symbol
@@ -21,12 +23,14 @@ typedef struct str
 
 } str;
 
-str* insertSymbol(str **table, int type, char *identifier, str* scope)
+str* insertSymbol(str **table,char*identifier, int type, int type_var, param* parameters, str* scope)
 {
 	// Inserting in the first position of the table
 	str *tmp = *table;
 	*table = (str*) malloc(sizeof(str));
 	(*table)->next = tmp;
+	(*table)->type_var = type_var;
+	(*table)->parameters = parameters;
 
 	(*table)->type = type;
 	(*table)->identifier = (char*) malloc(sizeof(char)*strlen(identifier) + 1);
@@ -89,7 +93,7 @@ void printTable(str* table)
 		printf("scope: %s\n", (table->scope != NULL)? table->scope->identifier : "Global");
 	}
 }
-
+/*
 int main(void)
 {
 	str* symbolTable = NULL;
@@ -117,4 +121,4 @@ int main(void)
 
 	printTable(symbolTable);
 	return EXIT_SUCCESS;
-}
+}*/

@@ -94,7 +94,7 @@ void printParam(param* list)
 		printf("type: %d\n", list->type);
 	}
 }
-
+/*
 int main(void)
 {
 	int x;
@@ -122,4 +122,4 @@ int main(void)
 	printParam(list2);
 
 	return EXIT_SUCCESS;
-}
+}*/

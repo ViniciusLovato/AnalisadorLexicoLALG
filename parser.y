@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include "symbolTable.c"
 #include <string.h>
 extern int yylineno;
 
@@ -11,9 +12,20 @@ extern FILE* yyin;
 void yyerror(char *s);
 void panic(int* array, int size);
 
+str* symbolTable = NULL;
+str* scope = NULL;
+
 %}
 
-%union {char* str;}
+%union {char* str;
+		int type;
+	   }
+%type <str> variaveis;
+%type <str> var_identifier;
+%type <str> mais_var;
+
+%type <type> tipo_var;
+
 %start programa
 
 %token var_identifier
@@ -68,7 +80,10 @@ void panic(int* array, int size);
 
 %%
 
-programa : lalg_program var_identifier lalg_semicolon corpo lalg_period;
+programa : lalg_program var_identifier lalg_semicolon corpo lalg_period 
+	{
+		printTable(symbolTable);
+	};
 
 corpo : dc lalg_begin comandos lalg_end
 	| error 
@@ -104,6 +119,14 @@ dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c
 	};
 
 dc_v : lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v 
+	{
+		char* token = strtok($2, " ");
+		while(token){
+			insertSymbol(&symbolTable,token, 1, $4, NULL, scope);
+			token = strtok(NULL, " ");
+		}
+	
+	}
 	| %empty
 	| error
 	{ 
@@ -115,7 +138,14 @@ dc_v : lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v
 	};
 
 
-tipo_var : lalg_real | lalg_integer
+tipo_var : lalg_real 
+	{
+		$$ = 1;
+	}
+	| lalg_integer
+	{
+		$$ = 0;
+	}
 	| error
 	{ 
 		printf("tipo_var error\n");
@@ -127,6 +157,16 @@ tipo_var : lalg_real | lalg_integer
 
 
 variaveis : var_identifier mais_var
+	{
+		if($2 == NULL){
+			$2 = (char*) calloc(sizeof(char),1);
+		}
+
+		$$ = (char*) malloc(sizeof(char) * (strlen($1) + strlen($2) + 2));
+		strcpy($$, $1);
+		strcat($$, " ");
+		strcat($$, $2);
+	}
 	| error
 	{ 
 		printf("variaveis error\n");
@@ -137,7 +177,14 @@ variaveis : var_identifier mais_var
 	};
 
 
-mais_var : lalg_comma variaveis | %empty
+mais_var : lalg_comma variaveis 
+	{
+		$$ = $2;
+	}
+	| %empty 
+	{
+		$$ = NULL;
+	}
 	| error
 	{ 
 		printf("mais_var error\n");
