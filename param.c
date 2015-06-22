@@ -33,8 +33,7 @@ param* searchParam(param *list, char *identifier, int type)
 {
 	while(list != NULL)
 	{
-		if(!strcmp(list->identifier, identifier) 
-				&& list->type == type)
+		if(!strcmp(list->identifier, identifier))
 		{
 			return list;
 		}
