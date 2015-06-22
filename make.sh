@@ -1,4 +1,4 @@
 #! /bin/sh
 flex  scanner.l
 yacc -d parser.y
-gcc y.tab.c lex.yy.c -o parser
+gcc param.c symbolTable.h y.tab.c lex.yy.c -o parser
