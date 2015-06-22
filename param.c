@@ -29,6 +29,22 @@ param* insertParam(param **list, char *identifier, int type)
 }
 
 // Search the table
+param* searchParam(param *list, char *identifier, int type)
+{
+	while(list != NULL)
+	{
+		if(!strcmp(list->identifier, identifier) 
+				&& list->type == type)
+		{
+			return list;
+		}
+		list = list->next;
+	}
+
+	return NULL;
+}
+
+// Search the table
 // This function returns:
 // 0 if everything is okay
 // 1 if the arguments doesn't match
