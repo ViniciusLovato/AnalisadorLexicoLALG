@@ -1,18 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-typedef struct param
-{
-	char* identifier;
-	// type of the variable
-	// 0 integer
-	// 1 real
-	// 2 char
-	int type;
-
-	struct param *next;
-} param;
+#include "param.h"
 
 param* insertParam(param **list, char *identifier, int type)
 {
