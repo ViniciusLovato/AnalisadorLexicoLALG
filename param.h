@@ -20,6 +20,7 @@ typedef struct param
 param* insertParam(param **list, char *identifier, int type);
 param* searchParam(param *list, char *identifier);
 int compareList(param* list1, param* list2);
+void concatParamList(param** l1, param *l2);
 void removeParam(param** list, param* rem);
 void printParam(param* list);
 #endif

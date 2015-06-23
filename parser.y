@@ -119,7 +119,6 @@ dc : dc_c dc_v dc_p dc_f
 dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c 
 	{
 		if(searchSymbol(symbolTable, $2, 1, scope) == NULL){
-			printf("to pesquisando %s\n", $2);
 			insertSymbol(&symbolTable, $2, 1, $4, NULL, scope);
 		}
 		else {
@@ -219,11 +218,25 @@ mais_var : lalg_comma variaveis
 
 
 
-dc_p : lalg_procedure var_identifier parametros lalg_semicolon corpo_p dc_p 
+dc_p : lalg_procedure var_identifier parametros  
 	{
-		printParam($3);	
-	}
+		// midrule
+
+		if(searchSymbol(symbolTable, $2, 0, scope) == NULL)
+		{
+			// change the program scope
+			scope = insertSymbol(&symbolTable, $2, 0, -1, $3, scope);
+		}
+		else 
+		{
+			printf("Procedimento ja declarado %s\n na linha %d", $2, yylineno);
+		}
+	}	lalg_semicolon corpo_p dc_p
 	| %empty
+	{
+		// restore the original scope (there is no inner declaration for functions)
+		scope = NULL;
+	}
 	| error
 	{ 
 		printf("procedure error\n");
@@ -235,7 +248,22 @@ dc_p : lalg_procedure var_identifier parametros lalg_semicolon corpo_p dc_p
 
 
 
-dc_f : lalg_function var_identifier parametros lalg_colon tipo_var corpo_p dc_f | %empty
+dc_f : lalg_function var_identifier parametros lalg_colon tipo_var  
+	{
+		if(searchSymbol(symbolTable, $2, 0, scope) == NULL){
+			// change the program scope
+			scope = insertSymbol(&symbolTable, $2, 0, -1, $3, scope);
+		}		
+		else
+		{
+			printf("Procedimento ja declarado %s\n na linha %d", $2, yylineno);
+		}
+	} lalg_semicolon corpo_p dc_f
+	| %empty
+	{
+		// restore the original scope (there is no inner declaration for functions)
+		scope = NULL;
+	}
 	| error
 	{ 
 		printf("function error\n");
@@ -278,7 +306,8 @@ lista_par : variaveis lalg_colon tipo_var mais_par
 				printf("Declaracao de parametro '%s' ja realizada na funcao, linha %d\n", token, yylineno - 1);
 			}
 			token = strtok(NULL, " ");
-		}			
+		}	
+		concatParamList(&$$, $4);
 	}
 	| error
 	{ 
@@ -333,6 +362,9 @@ lista_arg : lalg_leftp argumentos lalg_rightp | %empty
 
 
 argumentos : var_identifier mais_ident
+	{
+
+	}
 	| error
 	{ 
 		printf("argumentos error\n");

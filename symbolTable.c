@@ -65,9 +65,27 @@ void printTable(str* table)
 	for(; table != NULL; table = table->next)
 	{
 		printf("====== New Symbol =====\n");
+		printf("type: %s\n", (table->type == 0)? "Function" : "Variable");
 		printf("ID: %s\n", table->identifier);
-		printf("type: %d\n", table->type);
 		printf("scope: %s\n", (table->scope != NULL)? table->scope->identifier : "Global");
+		
+		if(table->type == 0)
+		{
+			printf("\t===== Parameters =====\n");
+			printParam(table->parameters);
+		}
+		else
+		{
+			if(table->type_var == 0)	
+				printf("Type: Inteiro\n");
+			else if(table->type_var == 1)	
+				printf("Type: Real\n");
+			else
+				printf("Type: Char\n");
+
+		}	
+			
+
 	}
 }
 /*

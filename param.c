@@ -104,9 +104,15 @@ void printParam(param* list)
 {
 	for(; list != NULL; list = list->next)
 	{
-		printf("====== New Param =====\n");
-		printf("ID: %s\n", list->identifier);
-		printf("type: %d\n", list->type);
+		printf("\t====== New Param =====\n");
+		printf("\tID: %s\n", list->identifier);
+
+		if(list->type == 0)	
+			printf("\tType: Inteiro\n");
+		else if(list->type == 1)	
+			printf("\tType: Real\n");
+		else
+			printf("\tType: Char\n");
 	}
 }
 /*

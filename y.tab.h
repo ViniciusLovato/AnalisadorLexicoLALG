@@ -138,12 +138,13 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 20 "parser.y" /* yacc.c:1909  */
+#line 23 "parser.y" /* yacc.c:1909  */
 char* str;
 		int type;
+		param* parameter;
 	   
 
-#line 147 "y.tab.h" /* yacc.c:1909  */
+#line 148 "y.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
