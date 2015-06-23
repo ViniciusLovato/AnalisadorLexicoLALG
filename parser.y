@@ -363,7 +363,7 @@ lista_arg : lalg_leftp argumentos lalg_rightp | %empty
 
 argumentos : var_identifier mais_ident
 	{
-
+		searchScope(symbolTable, $1, 1, scope);
 	}
 	| error
 	{ 
