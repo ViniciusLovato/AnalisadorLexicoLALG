@@ -1,3 +1,5 @@
+#ifndef _SYMBOLTABLE_H_
+#define _SYMBOLTABLE_H_
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,3 +30,4 @@ str* insertSymbol(str **table,char*identifier, int type, int type_var, param* pa
 str* searchSymbol(str *table, char *identifier, int type, str* scope);
 void removeSymbol(str** table, str* rem);
 void printTable(str* table);
+#endif

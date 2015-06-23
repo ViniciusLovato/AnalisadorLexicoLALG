@@ -1,7 +1,8 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "symbolTable.c"
+#include "symbolTable.h"
+#include "param.h"
 #include <string.h>
 extern int yylineno;
 
@@ -15,16 +16,24 @@ void panic(int* array, int size);
 str* symbolTable = NULL;
 str* scope = NULL;
 
+
+
 %}
 
 %union {char* str;
 		int type;
+		param* parameter;
 	   }
 %type <str> variaveis;
 %type <str> var_identifier;
 %type <str> mais_var;
 
 %type <type> tipo_var;
+%type <type> var_numero;
+
+%type <parameter> lista_par;
+%type <parameter> mais_par;
+%type <parameter> parametros;
 
 %start programa
 
@@ -108,9 +117,18 @@ dc : dc_c dc_v dc_p dc_f
 	};
 
 dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c 
+	{
+		if(searchSymbol(symbolTable, $2, 1, scope) == NULL){
+			printf("to pesquisando %s\n", $2);
+			insertSymbol(&symbolTable, $2, 1, $4, NULL, scope);
+		}
+		else {
+			printf("Declaracao de '%s' ja realizada, linha %d\n", $2, yylineno - 1);
+		}
+	}
 	| %empty 
 	| error 
-	{ 
+	{		
 		printf("dc_c error\n");
 		int syncArray[] = { lalg_var, lalg_begin };
 		yyclearin;
@@ -121,11 +139,16 @@ dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c
 dc_v : lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v 
 	{
 		char* token = strtok($2, " ");
-		while(token){
-			insertSymbol(&symbolTable,token, 1, $4, NULL, scope);
+		while(token)
+		{
+			if(searchSymbol(symbolTable, token, 1, scope) == NULL){
+				insertSymbol(&symbolTable,token, 1, $4, NULL, scope);
+			}
+			else {
+				printf("Declaracao de '%s' ja realizada, linha %d\n", $2, yylineno - 1);
+			}
 			token = strtok(NULL, " ");
-		}
-	
+		}	
 	}
 	| %empty
 	| error
@@ -196,7 +219,11 @@ mais_var : lalg_comma variaveis
 
 
 
-dc_p : lalg_procedure var_identifier parametros lalg_semicolon corpo_p dc_p | %empty
+dc_p : lalg_procedure var_identifier parametros lalg_semicolon corpo_p dc_p 
+	{
+		printParam($3);	
+	}
+	| %empty
 	| error
 	{ 
 		printf("procedure error\n");
@@ -219,7 +246,14 @@ dc_f : lalg_function var_identifier parametros lalg_colon tipo_var corpo_p dc_f 
 	};
 
 
-parametros : lalg_leftp lista_par lalg_rightp | %empty
+parametros : lalg_leftp lista_par lalg_rightp 
+	{
+		$$ = $2;
+	}
+	| %empty
+	{
+		$$ = NULL;
+	}
 	| error
 	{ 
 		printf("parametros error\n");
@@ -230,7 +264,22 @@ parametros : lalg_leftp lista_par lalg_rightp | %empty
 	};
 
 
-lista_par : variaveis lalg_colon tipo_var mais_par
+lista_par : variaveis lalg_colon tipo_var mais_par 
+	{
+		char* token = strtok($1, " ");	
+		$$ = NULL;	
+		while(token)
+		{	
+			if(searchParam($$, token) == NULL){
+		
+				insertParam(&$$, token, $3);	
+			}
+			else {
+				printf("Declaracao de parametro '%s' ja realizada na funcao, linha %d\n", token, yylineno - 1);
+			}
+			token = strtok(NULL, " ");
+		}			
+	}
 	| error
 	{ 
 		printf("lista_par error\n");
@@ -241,7 +290,14 @@ lista_par : variaveis lalg_colon tipo_var mais_par
 	};
 
 
-mais_par : lalg_semicolon lista_par | %empty
+mais_par : lalg_semicolon lista_par 
+	{
+		$$ = $2;	
+	}
+	| %empty
+	{
+		$$ = NULL;
+	}
 	| error
 	{ 
 		printf("mais_par error\n");
@@ -446,7 +502,14 @@ fator : var_identifier | var_numero | lalg_leftp expressao lalg_rightp
 		panic(syncArray, 7);
 	};
 
-var_numero : var_integer | var_real
+var_numero : var_integer 
+	{
+		$$ = 0;
+	}
+	| var_real 
+	{
+		$$ = 1;	
+	}
 	| error
 	{ 
 		printf("var_numero error\n");

@@ -1,5 +1,6 @@
 %{ 
-
+#include "param.h"
+#include "symbolTable.h"
 #include "y.tab.h"
 
 #define ERROR_LONG_ID 501

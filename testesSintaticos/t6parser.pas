@@ -1,15 +1,8 @@
 program nome1;
 {exemplo 1}
+const x = 20;
+const a = 10;
 var a, a1, b: integer;
-
-function funcao1(id : integer) : integer
-var num1 : real;
-begin
-	num1 := 10 + 10;
-	num2 := +num;
-	write(num1);
-end;
-
 begin
 	read(a);
 	a1 := a1*2;
