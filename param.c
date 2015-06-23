@@ -86,6 +86,20 @@ void removeParam(param** list, param* rem)
 	}
 }
 
+// This function concatenates 2 lists
+void concatParamList(param** l1, param *l2)
+{
+	if(l2 != NULL)
+	{
+		while(l2->next != NULL)
+		{
+			l2 = l2->next;
+		}
+		l2->next = (*l1);
+		(*l1) = l2;
+	}
+}
+
 void printParam(param* list)
 {
 	for(; list != NULL; list = list->next)
