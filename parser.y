@@ -4,6 +4,7 @@
 #include "symbolTable.h"
 #include "param.h"
 #include <string.h>
+
 extern int yylineno;
 
 #define YY_BUF_SIZE 32768
@@ -16,14 +17,13 @@ void panic(int* array, int size);
 str* symbolTable = NULL;
 str* scope = NULL;
 
-
-
 %}
 
 %union {char* str;
 		int type;
 		param* parameter;
 	   }
+
 %type <str> variaveis;
 %type <str> var_identifier;
 %type <str> mais_var;
@@ -38,6 +38,12 @@ str* scope = NULL;
 %type <parameter> argumentos;
 %type <parameter> lista_arg;
 %type <parameter> mais_ident;
+
+%type <type> expressao;
+%type <type> fator;
+%type <type> mais_fatores;
+%type <type> termo;
+%type <type> outros_termos;
 
 %start programa
 
@@ -434,12 +440,81 @@ comandos : cmd lalg_semicolon comandos | %empty
 
 
 cmd : lalg_read lalg_leftp variaveis lalg_rightp 
+	{
+		char* token = strtok($3, " ");	
+		str* tmp;
+		int flag = 0;
+		int i = 0;
+		while(token)
+		{
+			tmp = searchScope(symbolTable, token, 1, scope);
+			if(tmp == NULL){
+				printf("Variavel '%s' nao declarada, linha %d\n", token, yylineno - 1);
+			}
+			else
+			{
+				
+				flag += tmp->type_var;
+				i++;
+			}
+			token = strtok(NULL, " ");
+		}	
+		if(i != 0 && (flag%i) != 0)
+			printf("Tipos diferentes no read, na linha %d\n",yylineno);
+	}
 	| lalg_write lalg_leftp variaveis lalg_rightp 
-	
+	{
+		char* token = strtok($3, " ");	
+		str* tmp;
+		int flag = 0;
+		int i = 0;
+		while(token)
+		{	
+			tmp = searchScope(symbolTable, token, 1, scope);
+			if(tmp == NULL){
+				printf("Variavel '%s' nao declarada, linha %d\n", token, yylineno - 1);
+			}
+			else
+			{
+				flag += tmp->type_var;
+				i++;
+			}
+			token = strtok(NULL, " ");
+		}	
+		if(i != 0 && !flag%i)
+			printf("Tipos diferentes no write, na linha %d",yylineno);
+	}
 	| lalg_while lalg_leftp condicao lalg_rightp lalg_do cmd
 	| lalg_for var_identifier lalg_assignment expressao lalg_to expressao lalg_do cmd
+	{
+		str* tmp = searchScope(symbolTable, $2, 1, scope);
+		if(tmp->type_var > 1)
+		{
+			printf("Erro no tipo da variavel utilizada no for (inteiro esperado),  na linha %d\n", yylineno);
+		}
+		if($4 != 0 || $6 != 0)
+		{
+			printf("Expressao invalida para o loop (inteiro esperado),  na linha %d\n", yylineno);
+		}
+	}
 	| lalg_if condicao lalg_then cmd pfalsa
 	| var_identifier lalg_assignment expressao
+	{
+		str* tmp = searchScope(symbolTable, $1, 1, scope);
+		if(tmp != NULL)
+		{
+			if(tmp->type_var == 0 && $3 > 0)
+				printf("Tipos incompativeis na linha %d (atribuicao de char ou real para inteiro)\n", yylineno);
+			else if(tmp->type_var == 1 && $3 == 2)
+				printf("Tipos incompativeis na linha %d (atribuicao de char para real)\n", yylineno);
+			else if(tmp->type_var == 2 && $3 != 2)
+				printf("Tipos incompativeis na linha %d (atribuicao de inteiro ou real para char)\n", yylineno);
+		}
+		else
+		{
+			printf("Variavel %s nao declarada, na linha %d\n", $1, yylineno);
+		}
+	}
 	| var_identifier lista_arg 
 	{
 		str* tmp =  searchScope(symbolTable, $1, 0, scope);
@@ -457,8 +532,6 @@ cmd : lalg_read lalg_leftp variaveis lalg_rightp
 		yyerrok;
 		panic(syncArray, 1);
 	};
-
-
 
 condicao : expressao relacao expressao
 	| error
@@ -483,6 +556,16 @@ relacao : lalg_equal | lalg_n_equal | lalg_g_than |lalg_l_than | lalg_ge_than | 
 
 
 expressao : termo outros_termos
+	{
+		if($1 == 2 || $2 == 2)
+		{
+			printf("Operandos invalidos na linha %d\n", yylineno);
+		}
+		else if($1 == 1 || $2 == 1)
+			$$ = 1;
+		else
+			$$ = 0;
+	}
 	| error
 	{ 
 		printf("expressao error\n");
@@ -504,7 +587,21 @@ op_un : lalg_add | lalg_sub | %empty
 	};
 
 
-outros_termos : op_ad termo outros_termos | %empty
+outros_termos : op_ad termo outros_termos 
+	{
+		if($2 == 2 || $3 == 2)
+		{
+			printf("Operandos invalidos na linha %d\n", yylineno);
+		}
+		else if($2 == 1 || $3 == 1)
+			$$ = 1;
+		else
+			$$ = 0;
+	}
+	| %empty
+	{
+		$$ = 0;
+	}
 	| error
 	{ 
 		printf("outros_termos error\n");
@@ -527,6 +624,16 @@ op_ad : lalg_add | lalg_sub
 
 
 termo : op_un fator mais_fatores
+	{
+		if($2 == 2 || $3 == 2)
+		{
+			printf("Operandos invalidos na linha %d\n", yylineno);
+		}
+		else if($2 == 1 || $3 == 1)
+			$$ = 1;
+		else
+			$$ = 0;
+	}
 	| error
 	{ 
 		printf("termo error\n");
@@ -536,7 +643,21 @@ termo : op_un fator mais_fatores
 		panic(syncArray, 8);
 	};
 
-mais_fatores : op_mul fator mais_fatores | %empty
+mais_fatores : op_mul fator mais_fatores 
+	{
+		if($2 == 2 || $3 == 2)
+		{
+			printf("Operandos invalidos na linha %d\n", yylineno);
+		}
+		else if($2 == 1 || $3 == 1)
+			$$ = 1;
+		else
+			$$ = 0;
+	}
+	| %empty
+	{
+		$$ = 0;
+	}
 	| error
 	{ 
 		printf("mais_fatores error\n");
@@ -558,7 +679,20 @@ op_mul : lalg_mul | lalg_div
 	};
 
 
-fator : var_identifier | var_numero | lalg_leftp expressao lalg_rightp
+fator : var_identifier 
+	{
+		str* tmp = searchScope(symbolTable, $1, 1, scope);
+		if(tmp != NULL)
+			$$ = tmp->type_var;
+	}
+	| var_numero 
+	{
+		$$ = $1;
+	}
+	| lalg_leftp expressao lalg_rightp
+	{
+		$$ = $2;
+	}
 	| error
 	{ 
 		printf("fator error\n");

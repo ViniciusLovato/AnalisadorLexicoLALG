@@ -2,12 +2,13 @@
 program meuPrograma;
 const minhaVar = 10.1;
 var minhaVar2 : real;
-var minharVar3 : integer;
+var minhaVar3 : integer;
 	procedure meuProc (minharId1 : integer; minhaId2 : real);
 	var minhaPVar : real;
 	begin
-		read(minhaVar);
+		read(minhaVar2, minhaVar3);
+		minhaPVar := 1;
 	end;
 begin
-	read(minhaVar);
+	write(minhaVar);
 end.

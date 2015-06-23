@@ -45,7 +45,7 @@ str* searchScope(str *table, char *identifier, int type, str *scope)
 		tmp = table;
 		while(tmp != NULL)
 		{
-			if(!strcmp(tmp->identifier, identifier) && tmp->type == type && tmp->scope == scope)
+			if((!strcmp(tmp->identifier, identifier)) && tmp->type == type && tmp->scope == scope)
 			{
 				return tmp;
 			}
