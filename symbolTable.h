@@ -28,6 +28,7 @@ typedef struct str
 
 str* insertSymbol(str **table,char*identifier, int type, int type_var, param* parameters, str* scope);
 str* searchSymbol(str *table, char *identifier, int type, str* scope);
+str* searchScope(str *table, char *identifier, int type, str *scope);
 void removeSymbol(str** table, str* rem);
 void printTable(str* table);
 #endif

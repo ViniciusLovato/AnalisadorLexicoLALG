@@ -34,6 +34,38 @@ str* searchSymbol(str *table, char *identifier, int type, str* scope)
 	return NULL;
 }
 
+// Search the scope
+str* searchScope(str *table, char *identifier, int type, str *scope)
+{
+	str *tmp;
+	int isNotNull;
+
+	do
+	{
+		tmp = table;
+		while(tmp != NULL)
+		{
+			if(!strcmp(tmp->identifier, identifier) && tmp->type == type && tmp->scope == scope)
+			{
+				return tmp;
+			}
+			tmp = tmp->next;
+		}
+		if(scope != NULL)
+		{
+			scope = scope->scope;
+			isNotNull = 1;
+		}
+		else
+		{
+			isNotNull = 0;
+		}
+	}
+	while (isNotNull);
+
+	return NULL;
+}
+
 void removeSymbol(str** table, str* rem)
 {
 	str *tmp;
