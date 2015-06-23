@@ -35,6 +35,10 @@ str* scope = NULL;
 %type <parameter> mais_par;
 %type <parameter> parametros;
 
+%type <parameter> argumentos;
+%type <parameter> lista_arg;
+%type <parameter> mais_ident;
+
 %start programa
 
 %token var_identifier
@@ -350,7 +354,14 @@ corpo_p : dc_loc lalg_begin comandos lalg_end lalg_semicolon
 dc_loc : dc_v;
 
 
-lista_arg : lalg_leftp argumentos lalg_rightp | %empty
+lista_arg : lalg_leftp argumentos lalg_rightp 
+	{
+		$$ = $2;
+	}
+	| %empty
+	{
+		$$ = NULL;
+	}
 	| error
 	{ 
 		printf("lista_arg error\n");
@@ -363,7 +374,15 @@ lista_arg : lalg_leftp argumentos lalg_rightp | %empty
 
 argumentos : var_identifier mais_ident
 	{
-		searchScope(symbolTable, $1, 1, scope);
+		str* tmp =  searchScope(symbolTable, $1, 1, scope);
+		if(tmp != NULL)
+		{
+			insertParam(&$$, tmp->identifier, tmp->type_var);	
+		}
+		else
+		{
+			printf("Variavel %s nao declarada, na linha %d\n", $1, yylineno);
+		}
 	}
 	| error
 	{ 
@@ -374,7 +393,14 @@ argumentos : var_identifier mais_ident
 		panic(syncArray, 1);
 	};
 
-mais_ident : lalg_semicolon argumentos | %empty
+mais_ident : lalg_semicolon argumentos 
+	{
+		$$ = $2;
+	}
+	| %empty
+	{
+		$$ = NULL;
+	}
 	| error
 	{ 
 		printf("mais_ident error\n");
@@ -409,11 +435,19 @@ comandos : cmd lalg_semicolon comandos | %empty
 
 cmd : lalg_read lalg_leftp variaveis lalg_rightp 
 	| lalg_write lalg_leftp variaveis lalg_rightp 
+	
 	| lalg_while lalg_leftp condicao lalg_rightp lalg_do cmd
 	| lalg_for var_identifier lalg_assignment expressao lalg_to expressao lalg_do cmd
 	| lalg_if condicao lalg_then cmd pfalsa
 	| var_identifier lalg_assignment expressao
 	| var_identifier lista_arg 
+	{
+		str* tmp =  searchScope(symbolTable, $1, 0, scope);
+		if(compareList(tmp->parameters, $2) != 0)
+		{
+			printf("Lista de argumentos invalidos para a funcao %s, na linha %d\n", $1, yylineno);
+		}
+	}
 	| lalg_begin comandos lalg_end
 	| error
 	{ 
