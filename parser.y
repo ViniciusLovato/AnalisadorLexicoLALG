@@ -128,10 +128,12 @@ dc : dc_c dc_v dc_p dc_f
 
 dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c 
 	{
+		// Search for the token in the symbol table if not found add it there
 		if(searchSymbol(symbolTable, $2, 1, scope) == NULL){
 			insertSymbol(&symbolTable, $2, 1, $4, NULL, scope);
 		}
 		else {
+			// Previous declaration of token, print an error message
 			printf("Declaracao de '%s' ja realizada, linha %d\n", $2, yylineno - 1);
 		}
 	}
@@ -147,9 +149,11 @@ dc_c : lalg_const var_identifier lalg_equal var_numero lalg_semicolon dc_c
 
 dc_v : lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v 
 	{
+		// The variaveis token consists of several token names concatenated using spaces
 		char* token = strtok($2, " ");
 		while(token)
 		{
+			// Looking for a especific token in the symbol table, inserting it if not found
 			if(searchSymbol(symbolTable, token, 1, scope) == NULL){
 				insertSymbol(&symbolTable,token, 1, $4, NULL, scope);
 			}
@@ -172,10 +176,12 @@ dc_v : lalg_var variaveis lalg_colon tipo_var lalg_semicolon dc_v
 
 tipo_var : lalg_real 
 	{
+		// If the number is Real, the type is 1
 		$$ = 1;
 	}
 	| lalg_integer
 	{
+		// If is an integer it is 0
 		$$ = 0;
 	}
 	| error
@@ -190,6 +196,7 @@ tipo_var : lalg_real
 
 variaveis : var_identifier mais_var
 	{
+		// Creating a string of many tokens concatenated by empty spaces
 		if($2 == NULL){
 			$2 = (char*) calloc(sizeof(char),1);
 		}
@@ -211,10 +218,12 @@ variaveis : var_identifier mais_var
 
 mais_var : lalg_comma variaveis 
 	{
+		// mais_var token has the same value of variaveis token
 		$$ = $2;
 	}
 	| %empty 
 	{
+		// mais_var token is empty (null string)
 		$$ = NULL;
 	}
 	| error
@@ -231,7 +240,7 @@ mais_var : lalg_comma variaveis
 dc_p : lalg_procedure var_identifier parametros  
 	{
 		// midrule
-
+		// Searching for the symbol
 		if(searchSymbol(symbolTable, $2, 0, scope) == NULL)
 		{
 			// change the program scope
@@ -239,6 +248,7 @@ dc_p : lalg_procedure var_identifier parametros
 		}
 		else 
 		{
+			// Previous declaration exists
 			printf("Procedimento ja declarado %s\n na linha %d", $2, yylineno);
 		}
 	}	lalg_semicolon corpo_p dc_p
@@ -260,12 +270,14 @@ dc_p : lalg_procedure var_identifier parametros
 
 dc_f : lalg_function var_identifier parametros lalg_colon tipo_var  
 	{
+		// Searching for the symbol
 		if(searchSymbol(symbolTable, $2, 0, scope) == NULL){
 			// change the program scope
 			scope = insertSymbol(&symbolTable, $2, 0, -1, $3, scope);
 		}		
 		else
 		{
+			// Previous declaration exists
 			printf("Procedimento ja declarado %s\n na linha %d", $2, yylineno);
 		}
 	} lalg_semicolon corpo_p dc_f
@@ -286,10 +298,12 @@ dc_f : lalg_function var_identifier parametros lalg_colon tipo_var
 
 parametros : lalg_leftp lista_par lalg_rightp 
 	{
+		// parametros is the parameter list of lista_par
 		$$ = $2;
 	}
 	| %empty
 	{
+		// There is no parameter list
 		$$ = NULL;
 	}
 	| error
@@ -304,15 +318,18 @@ parametros : lalg_leftp lista_par lalg_rightp
 
 lista_par : variaveis lalg_colon tipo_var mais_par 
 	{
+		// variaveis token is a list of tokens concatenated by empty spaces
 		char* token = strtok($1, " ");	
 		$$ = NULL;	
 		while(token)
 		{	
+			// If the parameter is not there add it to the parameter list
 			if(searchParam($$, token) == NULL){
 		
 				insertParam(&$$, token, $3);	
 			}
 			else {
+				// there are more than one parameter with the same name
 				printf("Declaracao de parametro '%s' ja realizada na funcao, linha %d\n", token, yylineno - 1);
 			}
 			token = strtok(NULL, " ");
@@ -362,10 +379,12 @@ dc_loc : dc_v;
 
 lista_arg : lalg_leftp argumentos lalg_rightp 
 	{
+		// lista_arg is the argumentos parameter list
 		$$ = $2;
 	}
 	| %empty
 	{
+		// there is no paramters
 		$$ = NULL;
 	}
 	| error
@@ -380,13 +399,16 @@ lista_arg : lalg_leftp argumentos lalg_rightp
 
 argumentos : var_identifier mais_ident
 	{
+		// Searching in the scope for the variable
 		str* tmp =  searchScope(symbolTable, $1, 1, scope);
 		if(tmp != NULL)
 		{
+			// if found save it to the parameters list
 			insertParam(&$$, tmp->identifier, tmp->type_var);	
 		}
 		else
 		{
+			// else variable not declared
 			printf("Variavel %s nao declarada, na linha %d\n", $1, yylineno);
 		}
 	}
@@ -441,24 +463,27 @@ comandos : cmd lalg_semicolon comandos | %empty
 
 cmd : lalg_read lalg_leftp variaveis lalg_rightp 
 	{
+		// variaveis is a list of tokens concatenated by empty spaces
 		char* token = strtok($3, " ");	
 		str* tmp;
 		int flag = 0;
 		int i = 0;
 		while(token)
 		{
+			// Searching in the scope for the item
 			tmp = searchScope(symbolTable, token, 1, scope);
 			if(tmp == NULL){
 				printf("Variavel '%s' nao declarada, linha %d\n", token, yylineno - 1);
 			}
 			else
 			{
-				
+				// The flag is used to check all the types in the end
 				flag += tmp->type_var;
 				i++;
 			}
 			token = strtok(NULL, " ");
 		}	
+		// Comparing if all the variables have the same type on read
 		if(i != 0 && (flag%i) != 0)
 			printf("Tipos diferentes no read, na linha %d\n",yylineno);
 	}
@@ -470,28 +495,34 @@ cmd : lalg_read lalg_leftp variaveis lalg_rightp
 		int i = 0;
 		while(token)
 		{	
+			// Searching in the scope for the token
 			tmp = searchScope(symbolTable, token, 1, scope);
 			if(tmp == NULL){
 				printf("Variavel '%s' nao declarada, linha %d\n", token, yylineno - 1);
 			}
 			else
 			{
+				// flag is used to check all the types in the end
 				flag += tmp->type_var;
 				i++;
 			}
 			token = strtok(NULL, " ");
 		}	
+		// Comparing if all the variables have the same type on write
 		if(i != 0 && !flag%i)
 			printf("Tipos diferentes no write, na linha %d",yylineno);
 	}
 	| lalg_while lalg_leftp condicao lalg_rightp lalg_do cmd
 	| lalg_for var_identifier lalg_assignment expressao lalg_to expressao lalg_do cmd
 	{
+		// Verifying if the variable exists
+		//Searching for the variables in the scope
 		str* tmp = searchScope(symbolTable, $2, 1, scope);
 		if(tmp->type_var > 1)
 		{
 			printf("Erro no tipo da variavel utilizada no for (inteiro esperado),  na linha %d\n", yylineno);
 		}
+		// Only integers are allowed in the for
 		if($4 != 0 || $6 != 0)
 		{
 			printf("Expressao invalida para o loop (inteiro esperado),  na linha %d\n", yylineno);
@@ -500,6 +531,8 @@ cmd : lalg_read lalg_leftp variaveis lalg_rightp
 	| lalg_if condicao lalg_then cmd pfalsa
 	| var_identifier lalg_assignment expressao
 	{
+		// Comparing types
+		//Searching for the variables in the scope
 		str* tmp = searchScope(symbolTable, $1, 1, scope);
 		if(tmp != NULL)
 		{
@@ -517,10 +550,20 @@ cmd : lalg_read lalg_leftp variaveis lalg_rightp
 	}
 	| var_identifier lista_arg 
 	{
+		// Checking if the the function is declared
 		str* tmp =  searchScope(symbolTable, $1, 0, scope);
-		if(compareList(tmp->parameters, $2) != 0)
+		if(tmp != NULL)
 		{
-			printf("Lista de argumentos invalidos para a funcao %s, na linha %d\n", $1, yylineno);
+			// Comparing its parameter list to the declaration
+			if(compareList(tmp->parameters, $2) != 0)
+			{
+				printf("Lista de argumentos invalidos para a funcao ou procedimento %s, na linha %d\n", $1, yylineno);
+			}
+		}
+		else
+		{
+			// Function not defined
+			printf("Funcao ou procedimento %s nao declarado, na linha %d\n", $1, yylineno);
 		}
 	}
 	| lalg_begin comandos lalg_end
@@ -557,6 +600,7 @@ relacao : lalg_equal | lalg_n_equal | lalg_g_than |lalg_l_than | lalg_ge_than | 
 
 expressao : termo outros_termos
 	{
+		// Checking the type (2 is used for chars)
 		if($1 == 2 || $2 == 2)
 		{
 			printf("Operandos invalidos na linha %d\n", yylineno);
@@ -589,6 +633,7 @@ op_un : lalg_add | lalg_sub | %empty
 
 outros_termos : op_ad termo outros_termos 
 	{
+		// Checking the type (2 is used for chars)
 		if($2 == 2 || $3 == 2)
 		{
 			printf("Operandos invalidos na linha %d\n", yylineno);
@@ -625,6 +670,7 @@ op_ad : lalg_add | lalg_sub
 
 termo : op_un fator mais_fatores
 	{
+		// Checking the type (2 is used for chars)
 		if($2 == 2 || $3 == 2)
 		{
 			printf("Operandos invalidos na linha %d\n", yylineno);
@@ -645,6 +691,7 @@ termo : op_un fator mais_fatores
 
 mais_fatores : op_mul fator mais_fatores 
 	{
+		// Checking the type (2 is used for chars)
 		if($2 == 2 || $3 == 2)
 		{
 			printf("Operandos invalidos na linha %d\n", yylineno);
@@ -681,9 +728,16 @@ op_mul : lalg_mul | lalg_div
 
 fator : var_identifier 
 	{
+		// Searching for the identifier in the parameter list
 		str* tmp = searchScope(symbolTable, $1, 1, scope);
 		if(tmp != NULL)
+		{
 			$$ = tmp->type_var;
+		}
+		else
+		{
+			printf("Identificador %s nao declarado, na linha %d\n", $1, yylineno);
+		}
 	}
 	| var_numero 
 	{
@@ -704,10 +758,12 @@ fator : var_identifier
 
 var_numero : var_integer 
 	{
+		// integer is type 0
 		$$ = 0;
 	}
 	| var_real 
 	{
+		// real is type 1
 		$$ = 1;	
 	}
 	| error
@@ -747,7 +803,14 @@ int main(int argc, char **argv)
 
 	// Checks if the program has 1 argument and pass it as a program to be analized
 	if(argc == 2)
+	{
 		yyin = fopen(argv[1], "r");
+	}
+	else
+	{
+		printf("O nome de um arquivo deve ser passado como parametro\n");
+		exit(1);
+	}
 
 	// Creating the init buffer and pushing it into flex internal stack
 	createInitBuffer();
